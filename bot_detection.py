@@ -16,8 +16,8 @@ if st.button('识别'):
     #import xgboost
     # load model from file 模型加载
     #random_forest = pickle.load(open("random_forest.pickle.dat", "rb"))
-    xgb_cls = pickle.load(open("./model/xgb1222.pickle.dat", "rb"))
-    scaler = pickle.load(open("./model/scale1222.pickle.dat", "rb"))
+    xgb_cls = pickle.load(open("xgb1222.pickle.dat", "rb"))
+    scaler = pickle.load(open("scale1222.pickle.dat", "rb"))
 
     user_input  = user_data[['verified','urank','mbrank','statuses_count','follow_count','followers_count','sunshine_credit_level','school','location','gender', 'created_year', 'description','birthday_date','followers_follow','origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location','statuses_follow', 'content_length','content_std', 'name_digit','name_length','richness']]
     user_input = scaler.transform(user_input)
