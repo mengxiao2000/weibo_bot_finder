@@ -13,8 +13,8 @@ import pickle
 #import xgboost
 # load model from file 模型加载
 #random_forest = pickle.load(open("random_forest.pickle.dat", "rb"))
-xgb_cls = pickle.load(open("./model/xgb1222.pickle.dat", "rb"))
-scaler = pickle.load(open("./model/scale1222.pickle.dat", "rb"))
+xgb_cls = pickle.load(open("xgb1222.pickle.dat", "rb"))
+scaler = pickle.load(open("scale1222.pickle.dat", "rb"))
 
 @st.cache
 def predict_bot(user_data):
