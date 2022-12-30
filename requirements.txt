@@ -3,3 +3,4 @@ streamlit==1.15.2
 numpy==1.22.0
 pandas==1.1.3
 tqdm==4.50.2
+scikit-image==0.17.2
