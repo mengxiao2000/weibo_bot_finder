@@ -28,6 +28,11 @@ def predict_bot(user_data):
 
 
 st.markdown('# <center> 🤖️ 微博机器人识别 </center>', unsafe_allow_html=True)
+st.write("\n  ")
+st.write("\n  ")
+st.write("\n  ")
+st.write("\n  ")
+
 select = st.radio(
     "🔍微博用户查找选项：",
     ('昵称', '用户UID'),index=0, horizontal=True)
@@ -60,9 +65,14 @@ if st.button('🚀识别'):
     col2.metric("是否是机器人", ['否','是'][user_data['bot'].values[0]])
     col3.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。",)
     
+    st.markdown('😭识别结果不满意？[点击评论](https://docs.qq.com/sheet/DYXJNRGZzWnlJdmJk)，提出建议，帮助我们改进！')
+    
     
 
-    
+st.write("\n  ")
+st.write("\n  ")
+st.write("\n  ")
+st.write("\n  ")
 tab1, tab2, tab3 = st.tabs(["🌲背景", "📦模型介绍", "📒更新日志"])
 
 with tab1:
