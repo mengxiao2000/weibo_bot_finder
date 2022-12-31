@@ -1,356 +1,83 @@
-import requests
-import pandas as pd
-import numpy as np
-from tqdm import tqdm
-import time
-import re
-import json
 import streamlit as st
+import crawl_info
+import pandas as pd
 
-# 获取昵称用户对应的UID
+st.set_page_config(
+    page_title="微博机器人识别",
+    page_icon="🤖️",
+    layout="wide",
+)
+
+# 预测模型
+import pickle
+#import xgboost
+# load model from file 模型加载
+#random_forest = pickle.load(open("random_forest.pickle.dat", "rb"))
+xgb_cls = pickle.load(open("xgb1222.pickle.dat", "rb"))
+scaler = pickle.load(open("scale1222.pickle.dat", "rb"))
+
 @st.cache
-def get_uid(nickname):
-    headers = {'cookie':'__bid_n=184f088b36db02316c4207; FPTOKEN=30$PAUX8Dz8K/L3a7V2YwGCjKWsdPWYpdp0GEgyWHa9MU8XuCcuBs7XF7oSV7uYfVic8WnnWwnR6R8t8OoggALL/uGULsE3+I9vX6U6penwfX4RmaHs1pVREzzj5VBpjaSTw+v/MwvwOK6QeKyAhqnUIK2t9wcBZX3cMqN9zVnYh9os71aDVFeGJMTn2TFXyAEF2a37hQHStk7Xpd6l3UHZUQhpW5AL1Yyzz4kk64KPIBbXaU0++gCdP2PJ3czzO39rAiMVSO+PSa4Z0LyAqOSBoyQPezIUROs9qenxeWW4HvC3GW3X7M7rlhbWsb2YnQI98gYlYaB49AzfG7NGOuUdIVQ8hPTyqtmLZpG4SJSylUNsk7alOoxvn4CtEcPG4XKG|p3zCWu7Rj0akcUNwwmA35f+iZRS5ltxNoRUzfjVLgOI=|10|750222c78c0c50edc08ab2f821fa5c27; SCF=AgMK9ULMpSret7t0LYUhCOFIC1B_rvBqdWoRrGPJlvV9_NLx19V9yjbTPIXLGTCuxMiXIKFcCgi6ngYQAyEwOOw.; SUB=_2A25OrUR-DeRhGeBN7FYV8yvOyj-IHXVqbmw2rDV6PUJbktANLRj4kW1NRC0empmtWo4k-RjNz3whIwHCfqreCsJd; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; SSOLoginState=1672033326; ALF=1674625326; _T_WM=01354eedaa035b0648b1b9ee9b8bce1c; FEID=v10-34b8a658a34ae086daaa4c407a69bb6d51318cd0; __xaf_fpstarttimer__=1672036633970; __xaf_thstime__=1672036634086; FPTOKEN=z4/KqF1G9tat54xcfZf1qOZHlI3HLc23CWXrKXT5H8OaAf3PsuJWIG9ZdXiFrj5PjxXAQEpG/LM5r9FTepjbTnQ3IiCfKggtCFqcua5mEGajHVsIMMW3Io46NNke1G96yLKiVpCW7fsadiLfTgs0wlFOI+MJrnmAnU2Kc+yGG0s7R+ggqmMFWxw9RuVHximylZu9FPU8BLOFKk52H9XoHHyKCiaD2pofknEI+PRhqHtdh2Dd9rqFBXh1Mm5KZwHoLjAYyiyl9i0z0prbqpxpRuI9IuRgrzBnBuKS0ITlD4VEI07qE7WPNUR4OU9/YB0TExx42lAufJvWrun2Ts7uYIekvwiFpVaDf0MaHbYDGCfNfBc5FTfac+dj4umWDdQo2+sN+Dhsza8hfcsjOI8qgA==|5G3rBgk+TOZ2u3VRb9VV83e9bfcevTNzr0gdZ9Lc2pQ=|10|a1fc083d54668516a59fb84ace4aff57; __xaf_fptokentimer__=1672036634166; MLOGIN=1; XSRF-TOKEN=4aa16e; WEIBOCN_FROM=1110006030; M_WEIBOCN_PARAMS=luicode%3D10000011%26lfid%3D100103type%253D39%2526q%253D%25E9%2583%2591%25E5%25B7%259E123%2526t%253D%26fid%3D100103type%253D1%2526q%253D%25E9%2583%2591%25E5%25B7%259E123%26uicode%3D10000011'}
-    res = json.loads(requests.get(f'https://m.weibo.cn/api/container/getIndex?containerid=100103type%3D1%26q%3D{nickname}&page_type=searchall',headers=headers).text)
-    
-    try:
-        try:
-            uid = res['data']['cards'][0]['card_group'][0]['user']['id']
-        except:
-            uid = res['data']['cards'][0]['card_group'][0]['users'][0]['id']
-        return uid
-    except Exception as e:
-        print(e)
-        return np.NAN
+def predict_bot(user_data):
+    user_input  = user_data[['verified','urank','mbrank','statuses_count','follow_count','followers_count','sunshine_credit_level','school','location','gender', 'created_year', 'description','birthday_date','followers_follow','origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location','statuses_follow', 'content_length','content_std', 'name_digit','name_length','richness']]
+    user_input = scaler.transform(user_input)
+    user_data['bot'] = xgb_cls.predict(user_input)
+    user_data['bot_prob'] = xgb_cls.predict(user_input,output_margin=True)
 
-def clean_text(text):
-    pattern = re.compile(r'<[^>]+>',re.S)    # 匹配两个尖括号并将其作为一个整体
-    result = pattern.sub(' ', str(text))  
-    return result
+    return user_data
 
-# 获取长推文
-def get_long_weibo(long_id):
-    try:
-        long_text = requests.get(f'https://weibo.com/ajax/statuses/longtext?id={long_id}', headers=headers, proxies=None).json()['data']['longTextContent']
-        return long_text
-    except Exception as e:
-        return np.NAN
 
-def get_user_weibo(uid=6374435213, proxies=None):
-    
-    headers = {
-        'cookie':'SCF=Ah4LPY1SA2WPWoVoEdMMDK-6NV0zxUhlvDoMXLuLGiVB-a5oyvNST3pIQkY4Q6sLc0znK82WiiqiY_66-nKpmd8.; SUB=_2A25OGu9oDeRhGeBN7FYV8yvOyj-IHXVt5PEgrDV6PUJbktANLUvhkW1NRC0emlKT5CrWfBZSQWk-jGM_NROOZCpr; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5NHD95Qce0MXShefeo20Ws4Dqcj6i--ciK.Ni-24i--Ri-zfi-zNi--ciK.Ni-24i--NiKL2i-2pi--fiKyFi-2Xi--4iK.Xi-iFi--NiKnEi-ih; _T_WM=3e7256a4c489909e5a4d12ceb6e5ebe6; XSRF-TOKEN=fa2a25; WEIBOCN_FROM=1110006030; MLOGIN=1; M_WEIBOCN_PARAMS=luicode%3D10000011%26lfid%3D10760327051150572%26fid%3D1076037051150572%26uicode%3D10000011',
-    }
-    #x = requests.get(f'https://m.weibo.cn/api/container/getIndex?containerid=230413{uid}_-_WEIBO_SECOND_PROFILE_WEIBO&page_type=03&page=1', proxies=proxies, headers=headers).json()
-    x = requests.get(f'https://m.weibo.cn/api/container/getIndex?type=uid&value={uid}&containerid=107603{uid}',proxies=proxies).json()
-    #print(x)
-    if x.get('msg',0) ==  '这里还没有内容':
-        with open('郑州暴雨-deleted_account.txt',mode='a',encoding='utf-8') as w:
-            w.write(str(uid)+'\n')
-            return None
-    x_ = pd.DataFrame(x['data']['cards'])
 
-    all_line = pd.DataFrame()
-    
-    # 有时候第一页没有个人的微博，此时尝试向后翻页
-    if len(x_.query('card_type == 9')) == 0:
-        if x['data']['cardlistInfo'].get('since_id',0) != 0:
-            x_ = pd.DataFrame()
-            for i in range(4):
-                since_id = x['data']['cardlistInfo'].get('since_id',0)
-                #print(since_id)
-                x = requests.get(f'https://m.weibo.cn/api/container/getIndex?type=uid&value={uid}&containerid=107603{uid}&since_id={since_id}',).json()
-                x_info = pd.DataFrame(x['data']['cards'])
-                #time.sleep(1)
-                x_ = pd.concat([x_, x_info], axis=0)
-    # 整理微博信息
-    for line in x_.query('card_type == 9')['mblog']:
-        created_at = pd.to_datetime(line['created_at'])
-        mid = line['mid']
-        reposts_count = line.get('reposts_count',np.NAN)
-        comments_count = line.get('comments_count',np.NAN)
-        attitudes_count = line.get('attitudes_count',np.NAN)
-        isLongText = line.get('isLongText',np.NAN)
-        region_name = line.get('region_name',np.NAN) 
-        text = clean_text(line.get('text',np.NAN))
-        retweeted_text = clean_text(line['retweeted_status']['text']) if 'retweeted_status' in line.keys() else np.NAN
-        source = line['source']
-        # 判断是否有地理位置
-        if  line.get('page_info',0) != 0:
-            if line['page_info'].get('type',0) == 'place':
-                location =  line['page_info']['page_title']
-            else:
-                location = np.NAN
+st.markdown('# <center> 🤖️ 微博机器人识别 </center>', unsafe_allow_html=True)
+select = st.radio(
+    "🔍微博用户查找选项：",
+    ('昵称', '用户UID'),index=0, horizontal=True)
+
+if select == '昵称':
+    st.text_input('请输入准确的用户昵称 (例如:人民日报)',key="user_name",help='根据用户昵称查找的原理是根据昵称搜索用户，对搜索到的第一个用户进行识别。')
+else:
+    st.text_input("输入用户ID (例如:6374435213)", key="uid")
+
+if st.button('🚀识别'): 
+    if select == '昵称':
+        if (st.session_state.user_name).strip() == "":
+            st.error('用户昵称不能为空！', icon="🚨")
+        uid = crawl_info.get_uid(st.session_state.user_name)
+        #st.write(uid)
+        if pd.notna(uid):
+            user_data = crawl_info.crawl_info(str(uid))
+            user_data = predict_bot(user_data)
         else:
-            location = np.NAN
-        # 获取长微博
-        if isLongText:
-            text = clean_text(get_long_weibo(mid))
-
-        line = pd.DataFrame([[created_at,mid,reposts_count,comments_count,attitudes_count,isLongText,region_name, 
-                             text, retweeted_text, location]], 
-                     columns=['created_at','mid','reposts_count','comments_count','attitudes_count','isLongText','region_name',
-                              'text', 'retweeted_text', 'location'])
-        all_line = pd.concat([all_line, line])
-    
-    all_line.to_csv(str(uid)+'.csv')
-    
-headers = {
-    'authority': 'weibo.com',
-    'x-requested-with': 'XMLHttpRequest',
-    'sec-ch-ua-mobile': '?0',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-    'content-type': 'application/x-www-form-urlencoded',
-    'accept': '*/*',
-    'sec-fetch-site': 'same-origin',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-dest': 'empty',
-    'referer': 'https://weibo.com/1192329374/KnnG78Yf3?filter=hot&root_comment_id=0&type=comment',
-    'accept-language': 'zh-CN,zh;q=0.9,en-CN;q=0.8,en;q=0.7,es-MX;q=0.6,es;q=0.5',
-    'cookie':  'SINAGLOBAL=6602183114630.345.1640853107889; UOR=,,login.sina.com.cn; SSOLoginState=1672033332; wvr=6; _s_tentry=-; Apache=3779125990160.492.1672033337757; ULV=1672033337771:9:2:1:3779125990160.492.1672033337757:1670478971009; SCF=AgMK9ULMpSret7t0LYUhCOFIC1B_rvBqdWoRrGPJlvV9Br9lmJprq_hzhswvP5sj-J5HXjP-Ex1VIQ9rV3ER44E.; SUB=_2A25Oq28sDeRhGeBN7FYV8yvOyj-IHXVtwcfkrDV8PUJbmtANLVLckW9NRC0emn2wUA9tF81_f-P_gzk0elrRwQBv; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; ALF=1675013219; PC_TOKEN=8d4e28a2b2; webim_unReadCount=%7B%22time%22%3A1672421842775%2C%22dm_pub_total%22%3A79%2C%22chat_group_client%22%3A3%2C%22chat_group_notice%22%3A0%2C%22allcountNum%22%3A140%2C%22msgbox%22%3A0%7D'
-}
-
-headers2 = {
-    'authority': 'm.weibo.cn',
-    'x-requested-with': 'XMLHttpRequest',
-    'sec-ch-ua-mobile': '?0',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-    'content-type': 'application/x-www-form-urlencoded',
-    'accept': '*/*',
-    'sec-fetch-site': 'same-origin',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-dest': 'empty',
-    'referer': 'https://weibo.com/1192329374/KnnG78Yf3?filter=hot&root_comment_id=0&type=comment',
-    'accept-language': 'zh-CN,zh;q=0.9,en-CN;q=0.8,en;q=0.7,es-MX;q=0.6,es;q=0.5',
-    'cookie':  '__bid_n=184f088b36db02316c4207; FPTOKEN=30$PAUX8Dz8K/L3a7V2YwGCjKWsdPWYpdp0GEgyWHa9MU8XuCcuBs7XF7oSV7uYfVic8WnnWwnR6R8t8OoggALL/uGULsE3+I9vX6U6penwfX4RmaHs1pVREzzj5VBpjaSTw+v/MwvwOK6QeKyAhqnUIK2t9wcBZX3cMqN9zVnYh9os71aDVFeGJMTn2TFXyAEF2a37hQHStk7Xpd6l3UHZUQhpW5AL1Yyzz4kk64KPIBbXaU0++gCdP2PJ3czzO39rAiMVSO+PSa4Z0LyAqOSBoyQPezIUROs9qenxeWW4HvC3GW3X7M7rlhbWsb2YnQI98gYlYaB49AzfG7NGOuUdIVQ8hPTyqtmLZpG4SJSylUNsk7alOoxvn4CtEcPG4XKG|p3zCWu7Rj0akcUNwwmA35f+iZRS5ltxNoRUzfjVLgOI=|10|750222c78c0c50edc08ab2f821fa5c27; SCF=AgMK9ULMpSret7t0LYUhCOFIC1B_rvBqdWoRrGPJlvV9_NLx19V9yjbTPIXLGTCuxMiXIKFcCgi6ngYQAyEwOOw.; SUB=_2A25OrUR-DeRhGeBN7FYV8yvOyj-IHXVqbmw2rDV6PUJbktANLRj4kW1NRC0empmtWo4k-RjNz3whIwHCfqreCsJd; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; SSOLoginState=1672033326; ALF=1674625326; _T_WM=01354eedaa035b0648b1b9ee9b8bce1c; FEID=v10-34b8a658a34ae086daaa4c407a69bb6d51318cd0; __xaf_fpstarttimer__=1672036633970; __xaf_thstime__=1672036634086; FPTOKEN=z4/KqF1G9tat54xcfZf1qOZHlI3HLc23CWXrKXT5H8OaAf3PsuJWIG9ZdXiFrj5PjxXAQEpG/LM5r9FTepjbTnQ3IiCfKggtCFqcua5mEGajHVsIMMW3Io46NNke1G96yLKiVpCW7fsadiLfTgs0wlFOI+MJrnmAnU2Kc+yGG0s7R+ggqmMFWxw9RuVHximylZu9FPU8BLOFKk52H9XoHHyKCiaD2pofknEI+PRhqHtdh2Dd9rqFBXh1Mm5KZwHoLjAYyiyl9i0z0prbqpxpRuI9IuRgrzBnBuKS0ITlD4VEI07qE7WPNUR4OU9/YB0TExx42lAufJvWrun2Ts7uYIekvwiFpVaDf0MaHbYDGCfNfBc5FTfac+dj4umWDdQo2+sN+Dhsza8hfcsjOI8qgA==|5G3rBgk+TOZ2u3VRb9VV83e9bfcevTNzr0gdZ9Lc2pQ=|10|a1fc083d54668516a59fb84ace4aff57; __xaf_fptokentimer__=1672036634166; WEIBOCN_FROM=1110106030; MLOGIN=1; M_WEIBOCN_PARAMS=uicode%3D10000011%26fid%3D102803; XSRF-TOKEN=196087'
-}
-
-
-def parseUid(uid):
-    response = requests.get(url=f'https://weibo.com/ajax/profile/info?custom={uid}', headers=headers)
-    try:
-        return response.json()['data']['user']['id']
-    except:
-        return None
-
-    
-def getUserInfo(uid=6374435213):
-    try:
-        uid = int(uid)
-    except:
-        # 说明是 xiena 这样的英文串
-        uid = parseUid(uid)
-        if not uid:
-            return None
-    response = requests.get(url=f'https://weibo.com/ajax/profile/detail?uid={uid}', headers=headers)
-    #print(response.text)
-    if response.status_code == 400:
-        return {
-            'errorMsg': '用户可能注销或者封号',
-            'location': None,
-            'user_link': f'https://weibo.com/{uid}'
-        }
-    resp_json = response.json().get('data', None)
-    if not resp_json:
-        return None
-    sunshine_credit = resp_json.get('sunshine_credit', None)
-    if sunshine_credit:
-        sunshine_credit_level = sunshine_credit.get('level', None)
+            st.error('未查找到该用户，请检查昵称输入或使用用户UID进行查找！', icon="🚨")
     else:
-        sunshine_credit_level = None
-    education = resp_json.get('education', None)
-    if education:
-        school = education.get('school', None)
-    else:
-        school = None
-    resp_json
-    location = resp_json.get('location', None)
-    gender = resp_json.get('gender', None)
-
-    birthday = resp_json.get('birthday', None)
-    created_at = resp_json.get('created_at', None)
-    description = resp_json.get('description', None)
-    # 我关注的人中有多少人关注 ta
-#     followers = resp_json.get('followers', None)
-#     if followers:
-#         followers_num = followers.get('total_number', None)
-#     else:
-#         followers_num = None
-    region = resp_json.get('ip_location', None)
-    if region:
-        region = region.split('：')[1]
+        if (st.session_state.uid).strip() == "":
+            st.error('用户ID不能为空！', icon="🚨")
+        user_data = crawl_info.crawl_info((st.session_state.uid).strip())
     
-    user_info = {
-        'sunshine_credit_level': sunshine_credit_level,
-        'school': school,
-        'location': location,
-        'gender': gender,
-        'birthday': birthday,
-        'created_at': created_at,
-        'description': description,
-        # 'followers_num': followers_num,
-        'region':region
-        
-    }
-    df_ = pd.DataFrame([user_info.values()], columns=user_info.keys())
+        user_data = predict_bot(user_data)
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("用户昵称", user_data['screen_name'].values[0])
+    col2.metric("是否是机器人", ['否','是'][user_data['bot'].values[0]])
+    col3.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。",)
     
-    return df_
-
-def getUserInfo2(uid=6374435213):
-
-    url = 'https://m.weibo.cn/api/container/getIndex?mod=pedit_more%3Fmod%3Dpedit_more&jumpfrom=weibocom&containerid=100505' + str(uid)
-    res = requests.get(url, headers=headers).text
-    info = json.loads(res)
-    #print(info)
     
-    uid = info['data']['userInfo']['id']
-    screen_name = info['data']['userInfo']['screen_name']
 
-    verified = info['data']['userInfo']['verified']
-    verified_type = info['data']['userInfo']['verified_type']
-
-    urank = info['data']['userInfo']['urank']
-    mbrank = info['data']['userInfo']['mbrank']
-
-    statuses_count = info['data']['userInfo']['statuses_count']
-    follow_count = info['data']['userInfo']['follow_count']
-    followers_count = info['data']['userInfo']['followers_count']
     
-    df_ = pd.DataFrame([[uid, screen_name, verified, verified_type, urank, mbrank, statuses_count, follow_count, followers_count]], columns = ['uid', 'screen_name', 'verified', 'verified_type', 'urank', 'mbrank', 'statuses_count', 'follow_count', 'followers_count'])
-    return df_ 
+tab1, tab2, tab3 = st.tabs(["🌲背景", "📦模型介绍", "📒更新日志"])
 
-def run_info_spider(uid):
-    df1 = getUserInfo(uid)
-    df2 = getUserInfo2(uid)
-    df = pd.concat([df2, df1],axis=1)
-    df.to_csv('user_info.csv',mode='w', index=None)
-
-
-
-# 分析微博内容
-def wan_transfer(text):
-    text = str(text)
-    try:
-        if '万' in text:
-            num = float(text.strip('万'))
-            return int(num*10000)
-        elif '亿' in text:
-            num = float(text.strip('亿'))
-            return int(num*100000000)
-        else:
-            return int(text.strip())
-    except:
-        return np.NAN
-
-def cal_origin(csv_name):
-    try:
-        csv_ = pd.read_csv(csv_name)
-        
-        csv_['is_origin'] = csv_['retweeted_text'].apply(lambda x: 1 if pd.isna(x) else 0)
-       
-        csv_['publish_time'] = pd.to_datetime(csv_['created_at'])
-        csv_.index = csv_['publish_time']
-        
-        origin_rate = np.mean(csv_['is_origin'])
-        like_num = np.sum(csv_['attitudes_count'].apply(lambda x: wan_transfer(x)))
-        
-        forward_num = np.sum(csv_['reposts_count'].apply(lambda x: wan_transfer(x)))
-        
-        comment_num = np.sum(csv_['comments_count'].apply(lambda x: wan_transfer(x)))
-        
-        post_freq = len(csv_)/len(csv_['publish_time'].resample('24h').count())
-        post_location = 1 if sum(pd.notna(csv_['location']))>1 else 0
-        
-        richness = []
-        content_length_list = []
-        for cont in csv_['text'].values:
-            cont = str(cont).split('// @')[0]
-            richness.append(cont)
-            content_length_list.append(len(cont))
-
-        richness = len(set(''.join(richness)))
-        content_length = np.mean(content_length_list)
-        content_std = np.std(content_length_list)
-        return pd.DataFrame([[origin_rate, like_num, forward_num, comment_num, post_freq, post_location, content_length, content_std,richness]],
-                            columns=['origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location', 'content_length', 'content_std','richness'])
-    except Exception as e:
-        print(e)
-        return pd.DataFrame([[np.NAN for i in range(8)]],columns=['origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location', 'content_length', 'content_std','richness'])
-
-# 提取微博用户属性特征
-
-def wan_transfer(text):
-    text = str(text)
-    try:
-        if '万' in text:
-            num = float(text.strip('万'))
-            return int(num*10000)
-        elif '亿' in text:
-            num = float(text.strip('亿'))
-            return int(num*100000000)
-        else:
-            return int(text)
-    except:
-        return np.NAN
-
-# 昵称文本
-import re
-def nickname_digit(s):
-    res = re.findall('\d+',s)
-    return len(res)
+with tab1:
+    st.markdown(" **社交机器人**(social bot)是活跃在社交媒体中，由自动化算法操纵的能够模仿人类行为、自动生成内容并和人类账号产生互动的社交媒体账号。在国内舆论场中，社交机器人已经被发现操纵娱乐生态，干扰算法评价体系。社交机器人能够营造虚假人气，通过群体压力和网络传染，使复杂的社交媒体环境更加不确定。")
     
-def user_attr(data):
-    data['verified'] = data['verified'].map({True:1,False:0})
-
-    data['sunshine_credit_level'] = data['sunshine_credit_level'].map({'信用极低':0,'信用较低':1,'信用一般':2,'信用较好':3,'信用极好':4})
-
-    data['school'] = data['school'].apply(lambda x: 1 if pd.notna(x) else 0)
-
-    data['location'] = data['location'].apply(lambda x: 1 if pd.notna(x) else 0)
-
-    data['gender'] = data['gender'].map({'m':1,'f':0})
-
-    data['created_at'] = pd.to_datetime(data['created_at'])
-    data['created_year'] = data['created_at'].apply(lambda x: x.year)
-
-    data['description'] = data['description'].apply(lambda x: 0 if  x=='暂无简介' else 1)
-
-    data['birthday_date'] = data['birthday'].apply(lambda x: 1 if pd.notna(x) else 0)
-
-    # 粉丝数、微博数、关注数
-    data['follow_count'] = data['follow_count'].apply(lambda x: wan_transfer(x))
-    data['followers_count'] = data['followers_count'].apply(lambda x: wan_transfer(x))
-    data['statuses_count'] = data['statuses_count'].apply(lambda x: wan_transfer(x))
-
-    data['followers_follow'] = data['followers_count']/(data['follow_count']+1)
-    data['statuses_follow'] = data['statuses_count']/(data['follow_count']+1)
+with tab2:
+    st.markdown('该工具利用微博可公开获取的社交账号信息作为实验数据集，基于XGboost模型识别微博平台中的社交机器人。从新浪微博社交机器人商家处购买了不同智能水平的机器人账号共247个，再从亲友处、非广告的微博评论中以及具有代表性的公众人物、机构账号中人工筛选出人类账号共255个，利用爬虫采集这两类账号的公开数据，构建了账号原始数据集。然后，将获得的502个新浪微博账号数据进行数据预处理。参考以往文献在社交机器人识别方面使用的账号级别、内容级别等方面的特征，对每一个账号共抽取了25个特征，包括用户的性别、等级、是否认证、关注数、粉丝数、关注数和粉丝数之比、发布内容的原创率、发布频率等。选择随机森林、XGboost、决策树、支持向量机、Logistic回归、感知机、KNN和朴素贝叶斯作为二分类机器学习算法，构建社交机器人检测模型。为比较模型预测性能，采用5折交叉验证，XGBoost模型在测试集上预测性能最优，准确率为96.02%，F1值为95.89。')
+    st.markdown('获取详情信息，请联系mengxiaocntc@163.com')
     
-    data['name_digit'] = data['screen_name'].apply(lambda x:1 if nickname_digit(x)>= 1 else 0)
-    data['name_length'] = data['screen_name'].apply(lambda x: len(x))
+with tab3:
+    st.markdown('## 🎈 2021-12-31')
+    st.markdown('1. 将识别模型通过streamlit实现在线访问和部署。')
+    st.markdown('2. 更新了网页的基本信息。')
+    st.markdown('3. 添加昵称查找和UID查找两种查找方式。')
     
-    return data
 
 
-
-def crawl_info(uid):
-    try:
-        uid = str(uid)
-        run_info_spider(uid)
-        get_user_weibo(uid)
-        time.sleep(0.5)
-        #分析内容
-        df_uid = cal_origin(str(uid)+'.csv')
-        df_uid['uid'] = int(uid)
-        print(df_uid)
-        user_info = pd.read_csv('user_info.csv')
-        data = user_attr(user_info)
-        print(data)
-
-        #合并微博发布特征与用户属性特征
-        user_data = pd.merge(left=data, right=df_uid, on='uid', how='left')
-        return user_data
-    except Exception as e:
-        print(uid)
-        print(e)
-        
 
