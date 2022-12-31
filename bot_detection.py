@@ -1,6 +1,6 @@
 import streamlit as st
 import crawl_info
-
+import pandas as pd
 
 st.set_page_config(
     page_title="微博机器人识别",
@@ -28,17 +28,32 @@ def predict_bot(user_data):
 
 
 st.markdown('# <center> 🤖️ 微博机器人识别 </center>', unsafe_allow_html=True)
+select = st.radio(
+    "🔍微博用户查找选项：",
+    ('昵称', '用户UID'),index=0, horizontal=True)
 
-st.text_input("输入用户ID (例如:6374435213)", key="uid")
+if select == '昵称':
+    st.text_input('请输入准确的用户昵称 (例如:人民日报)',key="user_name",help='根据用户昵称查找的原理是根据昵称搜索用户，对搜索到的第一个用户进行识别。')
+else:
+    st.text_input("输入用户ID (例如:6374435213)", key="uid")
 
-
-if st.button('识别'): 
-    if (st.session_state.uid).strip() == "":
-        st.error('用户ID不能为空！', icon="🚨")
-    user_data = crawl_info.crawl_info((st.session_state.uid).strip())
-    user_data = user_data.fillna(-1)
-
-    user_data = predict_bot(user_data)
+if st.button('🚀识别'): 
+    if select == '昵称':
+        if (st.session_state.user_name).strip() == "":
+            st.error('用户昵称不能为空！', icon="🚨")
+        uid = crawl_info.get_uid(st.session_state.user_name)
+        #st.write(uid)
+        if pd.notna(uid):
+            user_data = crawl_info.crawl_info(str(uid))
+            user_data = predict_bot(user_data)
+        else:
+            st.error('未查找到该用户，请检查昵称输入或使用用户UID进行查找！', icon="🚨")
+    else:
+        if (st.session_state.uid).strip() == "":
+            st.error('用户ID不能为空！', icon="🚨")
+        user_data = crawl_info.crawl_info((st.session_state.uid).strip())
+    
+        user_data = predict_bot(user_data)
 
     col1, col2, col3 = st.columns(3)
     col1.metric("用户昵称", user_data['screen_name'].values[0])
