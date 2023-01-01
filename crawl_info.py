@@ -107,7 +107,7 @@ headers = {
     'sec-fetch-dest': 'empty',
     'referer': 'https://weibo.com/1192329374/KnnG78Yf3?filter=hot&root_comment_id=0&type=comment',
     'accept-language': 'zh-CN,zh;q=0.9,en-CN;q=0.8,en;q=0.7,es-MX;q=0.6,es;q=0.5',
-    'cookie':  'SINAGLOBAL=6602183114630.345.1640853107889; UOR=,,login.sina.com.cn; SSOLoginState=1672033332; wvr=6; _s_tentry=-; Apache=3779125990160.492.1672033337757; ULV=1672033337771:9:2:1:3779125990160.492.1672033337757:1670478971009; SCF=AgMK9ULMpSret7t0LYUhCOFIC1B_rvBqdWoRrGPJlvV9Br9lmJprq_hzhswvP5sj-J5HXjP-Ex1VIQ9rV3ER44E.; SUB=_2A25Oq28sDeRhGeBN7FYV8yvOyj-IHXVtwcfkrDV8PUJbmtANLVLckW9NRC0emn2wUA9tF81_f-P_gzk0elrRwQBv; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; ALF=1675013219; PC_TOKEN=8d4e28a2b2; webim_unReadCount=%7B%22time%22%3A1672421842775%2C%22dm_pub_total%22%3A79%2C%22chat_group_client%22%3A3%2C%22chat_group_notice%22%3A0%2C%22allcountNum%22%3A140%2C%22msgbox%22%3A0%7D'
+    'cookie':  'SINAGLOBAL=6602183114630.345.1640853107889; UOR=,,login.sina.com.cn; SSOLoginState=1672033332; wvr=6; _s_tentry=-; Apache=3779125990160.492.1672033337757; ULV=1672033337771:9:2:1:3779125990160.492.1672033337757:1670478971009; webim_unReadCount=%7B%22time%22%3A1672473508523%2C%22dm_pub_total%22%3A79%2C%22chat_group_client%22%3A3%2C%22chat_group_notice%22%3A0%2C%22allcountNum%22%3A144%2C%22msgbox%22%3A0%7D; SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwz2CppVRmBASXr9CUGTt5bH08mJ6cxnVW2a-fLs9wPc78.; SUB=_2A25OtIXBDeRhGeBN7FYV8yvOyj-IHXVtw_AJrDV8PUJbmtANLVHykW9NRC0emhxo6A5SyNeMoeG5l35b0JGraX78; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; ALF=1675133584; PC_TOKEN=74410e4e95'
 }
 
 headers2 = {
@@ -122,7 +122,7 @@ headers2 = {
     'sec-fetch-dest': 'empty',
     'referer': 'https://weibo.com/1192329374/KnnG78Yf3?filter=hot&root_comment_id=0&type=comment',
     'accept-language': 'zh-CN,zh;q=0.9,en-CN;q=0.8,en;q=0.7,es-MX;q=0.6,es;q=0.5',
-    'cookie':  '__bid_n=184f088b36db02316c4207; FPTOKEN=30$PAUX8Dz8K/L3a7V2YwGCjKWsdPWYpdp0GEgyWHa9MU8XuCcuBs7XF7oSV7uYfVic8WnnWwnR6R8t8OoggALL/uGULsE3+I9vX6U6penwfX4RmaHs1pVREzzj5VBpjaSTw+v/MwvwOK6QeKyAhqnUIK2t9wcBZX3cMqN9zVnYh9os71aDVFeGJMTn2TFXyAEF2a37hQHStk7Xpd6l3UHZUQhpW5AL1Yyzz4kk64KPIBbXaU0++gCdP2PJ3czzO39rAiMVSO+PSa4Z0LyAqOSBoyQPezIUROs9qenxeWW4HvC3GW3X7M7rlhbWsb2YnQI98gYlYaB49AzfG7NGOuUdIVQ8hPTyqtmLZpG4SJSylUNsk7alOoxvn4CtEcPG4XKG|p3zCWu7Rj0akcUNwwmA35f+iZRS5ltxNoRUzfjVLgOI=|10|750222c78c0c50edc08ab2f821fa5c27; SCF=AgMK9ULMpSret7t0LYUhCOFIC1B_rvBqdWoRrGPJlvV9_NLx19V9yjbTPIXLGTCuxMiXIKFcCgi6ngYQAyEwOOw.; SUB=_2A25OrUR-DeRhGeBN7FYV8yvOyj-IHXVqbmw2rDV6PUJbktANLRj4kW1NRC0empmtWo4k-RjNz3whIwHCfqreCsJd; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; SSOLoginState=1672033326; ALF=1674625326; _T_WM=01354eedaa035b0648b1b9ee9b8bce1c; FEID=v10-34b8a658a34ae086daaa4c407a69bb6d51318cd0; __xaf_fpstarttimer__=1672036633970; __xaf_thstime__=1672036634086; FPTOKEN=z4/KqF1G9tat54xcfZf1qOZHlI3HLc23CWXrKXT5H8OaAf3PsuJWIG9ZdXiFrj5PjxXAQEpG/LM5r9FTepjbTnQ3IiCfKggtCFqcua5mEGajHVsIMMW3Io46NNke1G96yLKiVpCW7fsadiLfTgs0wlFOI+MJrnmAnU2Kc+yGG0s7R+ggqmMFWxw9RuVHximylZu9FPU8BLOFKk52H9XoHHyKCiaD2pofknEI+PRhqHtdh2Dd9rqFBXh1Mm5KZwHoLjAYyiyl9i0z0prbqpxpRuI9IuRgrzBnBuKS0ITlD4VEI07qE7WPNUR4OU9/YB0TExx42lAufJvWrun2Ts7uYIekvwiFpVaDf0MaHbYDGCfNfBc5FTfac+dj4umWDdQo2+sN+Dhsza8hfcsjOI8qgA==|5G3rBgk+TOZ2u3VRb9VV83e9bfcevTNzr0gdZ9Lc2pQ=|10|a1fc083d54668516a59fb84ace4aff57; __xaf_fptokentimer__=1672036634166; WEIBOCN_FROM=1110106030; MLOGIN=1; M_WEIBOCN_PARAMS=uicode%3D10000011%26fid%3D102803; XSRF-TOKEN=196087'
+    'cookie':  '__bid_n=184f088b36db02316c4207; FPTOKEN=30$PAUX8Dz8K/L3a7V2YwGCjKWsdPWYpdp0GEgyWHa9MU8XuCcuBs7XF7oSV7uYfVic8WnnWwnR6R8t8OoggALL/uGULsE3+I9vX6U6penwfX4RmaHs1pVREzzj5VBpjaSTw+v/MwvwOK6QeKyAhqnUIK2t9wcBZX3cMqN9zVnYh9os71aDVFeGJMTn2TFXyAEF2a37hQHStk7Xpd6l3UHZUQhpW5AL1Yyzz4kk64KPIBbXaU0++gCdP2PJ3czzO39rAiMVSO+PSa4Z0LyAqOSBoyQPezIUROs9qenxeWW4HvC3GW3X7M7rlhbWsb2YnQI98gYlYaB49AzfG7NGOuUdIVQ8hPTyqtmLZpG4SJSylUNsk7alOoxvn4CtEcPG4XKG|p3zCWu7Rj0akcUNwwmA35f+iZRS5ltxNoRUzfjVLgOI=|10|750222c78c0c50edc08ab2f821fa5c27; SCF=AgMK9ULMpSret7t0LYUhCOFIC1B_rvBqdWoRrGPJlvV9_NLx19V9yjbTPIXLGTCuxMiXIKFcCgi6ngYQAyEwOOw.; SUB=_2A25OrUR-DeRhGeBN7FYV8yvOyj-IHXVqbmw2rDV6PUJbktANLRj4kW1NRC0empmtWo4k-RjNz3whIwHCfqreCsJd; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; SSOLoginState=1672033326; ALF=1674625326; _T_WM=01354eedaa035b0648b1b9ee9b8bce1c; FEID=v10-34b8a658a34ae086daaa4c407a69bb6d51318cd0; __xaf_fpstarttimer__=1672036633970; __xaf_thstime__=1672036634086; FPTOKEN=z4/KqF1G9tat54xcfZf1qOZHlI3HLc23CWXrKXT5H8OaAf3PsuJWIG9ZdXiFrj5PjxXAQEpG/LM5r9FTepjbTnQ3IiCfKggtCFqcua5mEGajHVsIMMW3Io46NNke1G96yLKiVpCW7fsadiLfTgs0wlFOI+MJrnmAnU2Kc+yGG0s7R+ggqmMFWxw9RuVHximylZu9FPU8BLOFKk52H9XoHHyKCiaD2pofknEI+PRhqHtdh2Dd9rqFBXh1Mm5KZwHoLjAYyiyl9i0z0prbqpxpRuI9IuRgrzBnBuKS0ITlD4VEI07qE7WPNUR4OU9/YB0TExx42lAufJvWrun2Ts7uYIekvwiFpVaDf0MaHbYDGCfNfBc5FTfac+dj4umWDdQo2+sN+Dhsza8hfcsjOI8qgA==|5G3rBgk+TOZ2u3VRb9VV83e9bfcevTNzr0gdZ9Lc2pQ=|10|a1fc083d54668516a59fb84ace4aff57; __xaf_fptokentimer__=1672036634166; WEIBOCN_FROM=1110006030; XSRF-TOKEN=430081; MLOGIN=1'
 }
 
 
@@ -138,12 +138,18 @@ def getUserInfo(uid=6374435213):
     try:
         uid = int(uid)
     except:
+        # 说明是 xiena 这样的英文串
         uid = parseUid(uid)
         if not uid:
             return None
     response = requests.get(url=f'https://weibo.com/ajax/profile/detail?uid={uid}', headers=headers)
+    #print(response.text)
     if response.status_code == 400:
-        return None
+        return {
+            'errorMsg': '用户可能注销或者封号',
+            'location': None,
+            'user_link': f'https://weibo.com/{uid}'
+        }
     resp_json = response.json().get('data', None)
     if not resp_json:
         return None
@@ -164,7 +170,12 @@ def getUserInfo(uid=6374435213):
     birthday = resp_json.get('birthday', None)
     created_at = resp_json.get('created_at', None)
     description = resp_json.get('description', None)
-
+    # 我关注的人中有多少人关注 ta
+#     followers = resp_json.get('followers', None)
+#     if followers:
+#         followers_num = followers.get('total_number', None)
+#     else:
+#         followers_num = None
     region = resp_json.get('ip_location', None)
     if region:
         region = region.split('：')[1]
@@ -343,4 +354,3 @@ def crawl_info(uid):
         print(e)
         
 
-#
