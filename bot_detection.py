@@ -83,10 +83,12 @@ with tab2:
     st.markdown('获取详情信息，请联系mengxiaocntc@163.com')
     
 with tab3:
+    
     st.markdown('## 🎈 2021-12-31')
     st.markdown('1. 将识别模型通过streamlit实现在线访问和部署。')
     st.markdown('2. 更新了网页的基本信息。')
     st.markdown('3. 添加昵称查找和UID查找两种查找方式。')
+    st.markdown('4. 目前仍然存在因cookie过期而无法长期使用的问题。')
     
 
 
