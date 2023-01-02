@@ -22,6 +22,7 @@ def saveImage(image, imagepath):
     return imagepath_correct
 
 '''扫码登录微博'''
+@st.cache(allow_output_mutation=True)
 class weiboScanqr():
     is_callable = True
     def __init__(self, **kwargs):
@@ -29,7 +30,7 @@ class weiboScanqr():
         self.info = 'login in weibo in scanqr mode'
         self.cur_path = os.getcwd()
         self.rootdir = os.path.split(os.path.abspath(__file__))[0]
-        self.website_name = 'weibo_bot'
+        self.website_name = 'weibo_bot_'
         self.session = requests.Session()
         self.__initialize()
         
@@ -105,6 +106,7 @@ class weiboScanqr():
         pickle.dump(history_infos, fp)
         fp.close()
     
+    
     '''导入历史数据'''
     def loadhistory(self, username):
         #history_path = os.path.join(self.rootdir, self.website_name+'.pkl')
@@ -158,6 +160,7 @@ class weiboScanqr():
 
 
 # 微博登陆
+@st.cache(allow_output_mutation=True, suppress_st_warning=True)
 def login_weibo():
     qr = weiboScanqr()
     infos_return, session, need_login = qr.loadhistory('default')
