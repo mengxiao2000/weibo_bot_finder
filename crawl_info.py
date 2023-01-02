@@ -6,14 +6,13 @@ import time
 import re
 import json
 import streamlit as st
-from DecryptLogin import login
-from PIL import Image
+#from DecryptLogin import login
+#from PIL import Image
 session = ""
 
 
 
 # 获取昵称用户对应的UID
-@st.cache
 def get_uid(nickname):
     headers = {'cookie':'__bid_n=184f088b36db02316c4207; FPTOKEN=30$PAUX8Dz8K/L3a7V2YwGCjKWsdPWYpdp0GEgyWHa9MU8XuCcuBs7XF7oSV7uYfVic8WnnWwnR6R8t8OoggALL/uGULsE3+I9vX6U6penwfX4RmaHs1pVREzzj5VBpjaSTw+v/MwvwOK6QeKyAhqnUIK2t9wcBZX3cMqN9zVnYh9os71aDVFeGJMTn2TFXyAEF2a37hQHStk7Xpd6l3UHZUQhpW5AL1Yyzz4kk64KPIBbXaU0++gCdP2PJ3czzO39rAiMVSO+PSa4Z0LyAqOSBoyQPezIUROs9qenxeWW4HvC3GW3X7M7rlhbWsb2YnQI98gYlYaB49AzfG7NGOuUdIVQ8hPTyqtmLZpG4SJSylUNsk7alOoxvn4CtEcPG4XKG|p3zCWu7Rj0akcUNwwmA35f+iZRS5ltxNoRUzfjVLgOI=|10|750222c78c0c50edc08ab2f821fa5c27; SCF=AgMK9ULMpSret7t0LYUhCOFIC1B_rvBqdWoRrGPJlvV9_NLx19V9yjbTPIXLGTCuxMiXIKFcCgi6ngYQAyEwOOw.; SUB=_2A25OrUR-DeRhGeBN7FYV8yvOyj-IHXVqbmw2rDV6PUJbktANLRj4kW1NRC0empmtWo4k-RjNz3whIwHCfqreCsJd; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; SSOLoginState=1672033326; ALF=1674625326; _T_WM=01354eedaa035b0648b1b9ee9b8bce1c; FEID=v10-34b8a658a34ae086daaa4c407a69bb6d51318cd0; __xaf_fpstarttimer__=1672036633970; __xaf_thstime__=1672036634086; FPTOKEN=z4/KqF1G9tat54xcfZf1qOZHlI3HLc23CWXrKXT5H8OaAf3PsuJWIG9ZdXiFrj5PjxXAQEpG/LM5r9FTepjbTnQ3IiCfKggtCFqcua5mEGajHVsIMMW3Io46NNke1G96yLKiVpCW7fsadiLfTgs0wlFOI+MJrnmAnU2Kc+yGG0s7R+ggqmMFWxw9RuVHximylZu9FPU8BLOFKk52H9XoHHyKCiaD2pofknEI+PRhqHtdh2Dd9rqFBXh1Mm5KZwHoLjAYyiyl9i0z0prbqpxpRuI9IuRgrzBnBuKS0ITlD4VEI07qE7WPNUR4OU9/YB0TExx42lAufJvWrun2Ts7uYIekvwiFpVaDf0MaHbYDGCfNfBc5FTfac+dj4umWDdQo2+sN+Dhsza8hfcsjOI8qgA==|5G3rBgk+TOZ2u3VRb9VV83e9bfcevTNzr0gdZ9Lc2pQ=|10|a1fc083d54668516a59fb84ace4aff57; __xaf_fptokentimer__=1672036634166; MLOGIN=1; XSRF-TOKEN=4aa16e; WEIBOCN_FROM=1110006030; M_WEIBOCN_PARAMS=luicode%3D10000011%26lfid%3D100103type%253D39%2526q%253D%25E9%2583%2591%25E5%25B7%259E123%2526t%253D%26fid%3D100103type%253D1%2526q%253D%25E9%2583%2591%25E5%25B7%259E123%26uicode%3D10000011'}
     res = json.loads(requests.get(f'https://m.weibo.cn/api/container/getIndex?containerid=100103type%3D1%26q%3D{nickname}&page_type=searchall',headers=headers).text)
@@ -235,7 +234,6 @@ def run_info_spider(uid):
     df.to_csv('user_info.csv',mode='w', index=None)
 
 
-
 # 分析微博内容
 def wan_transfer(text):
     text = str(text)
@@ -287,7 +285,6 @@ def cal_origin(csv_name):
         return pd.DataFrame([[np.NAN for i in range(8)]],columns=['origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location', 'content_length', 'content_std','richness'])
 
 # 提取微博用户属性特征
-
 def wan_transfer(text):
     text = str(text)
     try:
@@ -346,7 +343,7 @@ def crawl_info(uid):
         uid = str(uid)
         run_info_spider(uid)
         get_user_weibo(uid)
-        time.sleep(0.5)
+        #time.sleep(0.5)
         #分析内容
         df_uid = cal_origin(str(uid)+'.csv')
         df_uid['uid'] = int(uid)
