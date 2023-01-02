@@ -2,6 +2,7 @@ import streamlit as st
 import crawl_info
 import pandas as pd
 
+
 st.set_page_config(
     page_title="微博机器人识别",
     page_icon="🤖️",
@@ -32,42 +33,87 @@ st.write("\n  ")
 st.write("\n  ")
 st.write("\n  ")
 st.write("\n  ")
+st.markdown('## 第一步：登陆微博账号。')
+st.markdown('登陆微博账号，获取cookie，从而访问账号信息。该工具不会上传账号信息，请放心使用。')
 
-select = st.radio(
-    "🔍微博用户查找选项：",
-    ('昵称', '用户UID'),index=0, horizontal=True)
+
+session = ""
+if 'login_status' not in st.session_state:
+    st.session_state['login_status'] = '未登陆'
+
+def login_():
+    info_return, session = crawl_info.login_weibo()
+    crawl_info.session = session
+    st.session_state['login_status'] = info_return['nick']
+    return info_return, session
+    
+def logout():
+    if session != "":
+        session.close()
+        crawl_info.session = ""
+        session.cookies.clear()
+
+
+
+login_btn = st.button('登陆')
+if login_btn:
+    info_return, session = login_()
+
+    
+    
+st.write('登陆状态:' + st.session_state['login_status'])
+
+# logout_btn = st.button('登出') 
+# if logout_btn:
+#     logout()
+    
+st.markdown('## 第二步：输入要判断是否为机器人的用户。')
+col1_search, col2_search, col3_search , col4_search  = st.columns(4)
+col1_search.markdown('🔍微博用户查找选项：')
+select = col2_search.radio(
+    "",
+    ('昵称', '用户UID'),index=0, horizontal=True, label_visibility="collapsed")
 
 if select == '昵称':
     st.text_input('请输入准确的用户昵称 (例如:人民日报)',key="user_name",help='根据用户昵称查找的原理是根据昵称搜索用户，对搜索到的第一个用户进行识别。')
 else:
     st.text_input("输入用户ID (例如:6374435213)", key="uid")
 
-if st.button('🚀识别'): 
-    if select == '昵称':
+st.markdown('## 第三步：点击识别，查看结果。')
+if st.button('🚀识别'):
+    if st.session_state['login_status'] == '未登陆':
+        st.error('请先登陆！', icon="🚨")
+        
+    elif select == '昵称':
         if (st.session_state.user_name).strip() == "":
             st.error('用户昵称不能为空！', icon="🚨")
-        uid = crawl_info.get_uid(st.session_state.user_name)
+        else:
+            uid = crawl_info.get_uid(st.session_state.user_name)
         #st.write(uid)
         if pd.notna(uid):
             user_data = crawl_info.crawl_info(str(uid))
             user_data = predict_bot(user_data)
+            col1, col2, col3 = st.columns(3)
+            col1.metric("用户昵称", user_data['screen_name'].values[0])
+            col2.metric("是否是机器人", ['否','是'][user_data['bot'].values[0]])
+            col3.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。",)
+            st.markdown('😭识别结果不满意？[点击评论](https://docs.qq.com/sheet/DYXJNRGZzWnlJdmJk)，提出建议，帮助我们改进！')
         else:
             st.error('未查找到该用户，请检查昵称输入或使用用户UID进行查找！', icon="🚨")
+            
     else:
         if (st.session_state.uid).strip() == "":
             st.error('用户ID不能为空！', icon="🚨")
-        user_data = crawl_info.crawl_info((st.session_state.uid).strip())
-    
-        user_data = predict_bot(user_data)
+        else:
+            user_data = crawl_info.crawl_info((st.session_state.uid).strip())
+            user_data = predict_bot(user_data)
+            col1, col2, col3 = st.columns(3)
+            col1.metric("用户昵称", user_data['screen_name'].values[0])
+            col2.metric("是否是机器人", ['否','是'][user_data['bot'].values[0]])
+            col3.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。",)
 
-    col1, col2, col3 = st.columns(3)
-    col1.metric("用户昵称", user_data['screen_name'].values[0])
-    col2.metric("是否是机器人", ['否','是'][user_data['bot'].values[0]])
-    col3.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。",)
-    
-    st.markdown('😭识别结果不满意？[点击评论](https://docs.qq.com/sheet/DYXJNRGZzWnlJdmJk)，提出建议，帮助我们改进！')
-    
-    
+            st.markdown('😭识别结果不满意？[点击评论](https://docs.qq.com/sheet/DYXJNRGZzWnlJdmJk)，提出建议，帮助我们改进！')
+
 
 st.write("\n  ")
 st.write("\n  ")
