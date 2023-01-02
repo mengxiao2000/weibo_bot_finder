@@ -4,7 +4,6 @@ import pandas as pd
 import login
 
 
-    
 st.set_page_config(
     page_title="微博机器人识别",
     page_icon="🤖️",
@@ -19,7 +18,6 @@ import pickle
 xgb_cls = pickle.load(open("xgb1222.pickle.dat", "rb"))
 scaler = pickle.load(open("scale1222.pickle.dat", "rb"))
 
-@st.cache
 def predict_bot(user_data):
     user_input  = user_data[['verified','urank','mbrank','statuses_count','follow_count','followers_count','sunshine_credit_level','school','location','gender', 'created_year', 'description','birthday_date','followers_follow','origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location','statuses_follow', 'content_length','content_std', 'name_digit','name_length','richness']]
     user_input = scaler.transform(user_input)
@@ -39,7 +37,9 @@ st.markdown('## 第一步：登陆微博账号。')
 st.markdown('登陆微博账号，获取cookie，从而访问账号信息。该工具不会上传账号信息，请放心使用。')
 
 
-session = ""
+session = st.empty()
+info_return = st.empty()
+
 if 'login_status' not in st.session_state:
     st.session_state['login_status'] = '❎登陆状态:未登陆'
     
@@ -85,7 +85,7 @@ else:
 
 st.markdown('## 第三步：点击识别，查看结果。')
 if st.button('🚀识别'):
-    if st.session_state['login_status'] == '未登陆':
+    if st.session_state['login_status'] == '❎登陆状态:未登陆':
         st.error('请先登陆！', icon="🚨")
         
     elif select == '昵称':
@@ -133,8 +133,10 @@ with tab2:
     st.markdown('获取详情信息，请联系mengxiaocntc@163.com')
     
 with tab3:
+    st.markdown('## 🎈 2023-01-02')
+    st.markdown('1. 增加了登陆功能从而获取cookie。')
     
-    st.markdown('## 🎈 2021-12-31')
+    st.markdown('## 🎈 2022-12-31')
     st.markdown('1. 将识别模型通过streamlit实现在线访问和部署。')
     st.markdown('2. 更新了网页的基本信息。')
     st.markdown('3. 添加昵称查找和UID查找两种查找方式。')
