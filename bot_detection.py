@@ -1,8 +1,10 @@
 import streamlit as st
 import crawl_info
 import pandas as pd
+import login
 
 
+    
 st.set_page_config(
     page_title="微博机器人识别",
     page_icon="🤖️",
@@ -39,12 +41,14 @@ st.markdown('登陆微博账号，获取cookie，从而访问账号信息。该�
 
 session = ""
 if 'login_status' not in st.session_state:
-    st.session_state['login_status'] = '未登陆'
+    st.session_state['login_status'] = '❎登陆状态:未登陆'
+    
 
 def login_():
-    info_return, session = crawl_info.login_weibo()
+    info_return, session = login.login_weibo()
     crawl_info.session = session
-    st.session_state['login_status'] = info_return['nick']
+    st.session_state['login_status'] = "✅登陆成功 😊欢迎你，" + info_return['nick']
+    placeholder.empty()
     return info_return, session
     
 def logout():
@@ -53,21 +57,21 @@ def logout():
         crawl_info.session = ""
         session.cookies.clear()
 
+placeholder = st.empty()
+if st.session_state['login_status'] == '❎登陆状态:未登陆':
+    login_btn = placeholder.button('点击登陆')
+    if login_btn:
+        info_return, session = login_()
+else:
+    pass
 
-
-login_btn = st.button('登陆')
-if login_btn:
-    info_return, session = login_()
-
-    
-    
-st.write('登陆状态:' + st.session_state['login_status'])
+st.write(st.session_state['login_status'])
 
 # logout_btn = st.button('登出') 
 # if logout_btn:
 #     logout()
     
-st.markdown('## 第二步：输入要判断是否为机器人的用户。')
+st.markdown('## 第二步：输入需要判断是否为机器人的用户。')
 col1_search, col2_search, col3_search , col4_search  = st.columns(4)
 col1_search.markdown('🔍微博用户查找选项：')
 select = col2_search.radio(
