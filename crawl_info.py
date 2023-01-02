@@ -6,6 +6,19 @@ import time
 import re
 import json
 import streamlit as st
+from DecryptLogin import login
+
+session = ""
+
+# 微博登陆
+def login_weibo():
+    # the instanced client
+    client = login.Client()
+    # the instanced weibo
+    weibo = client.weibo(reload_history=True)
+    # use the login function to login in weibo
+    infos_return, session = weibo.login('me1', 'pass123', 'scanqr')
+    return infos_return, session 
 
 # 获取昵称用户对应的UID
 @st.cache
@@ -38,9 +51,6 @@ def get_long_weibo(long_id):
 
 def get_user_weibo(uid=6374435213, proxies=None):
     
-    headers = {
-        'cookie':'SCF=Ah4LPY1SA2WPWoVoEdMMDK-6NV0zxUhlvDoMXLuLGiVB-a5oyvNST3pIQkY4Q6sLc0znK82WiiqiY_66-nKpmd8.; SUB=_2A25OGu9oDeRhGeBN7FYV8yvOyj-IHXVt5PEgrDV6PUJbktANLUvhkW1NRC0emlKT5CrWfBZSQWk-jGM_NROOZCpr; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5NHD95Qce0MXShefeo20Ws4Dqcj6i--ciK.Ni-24i--Ri-zfi-zNi--ciK.Ni-24i--NiKL2i-2pi--fiKyFi-2Xi--4iK.Xi-iFi--NiKnEi-ih; _T_WM=3e7256a4c489909e5a4d12ceb6e5ebe6; XSRF-TOKEN=fa2a25; WEIBOCN_FROM=1110006030; MLOGIN=1; M_WEIBOCN_PARAMS=luicode%3D10000011%26lfid%3D10760327051150572%26fid%3D1076037051150572%26uicode%3D10000011',
-    }
     #x = requests.get(f'https://m.weibo.cn/api/container/getIndex?containerid=230413{uid}_-_WEIBO_SECOND_PROFILE_WEIBO&page_type=03&page=1', proxies=proxies, headers=headers).json()
     x = requests.get(f'https://m.weibo.cn/api/container/getIndex?type=uid&value={uid}&containerid=107603{uid}',proxies=proxies).json()
     #print(x)
@@ -107,7 +117,7 @@ headers = {
     'sec-fetch-dest': 'empty',
     'referer': 'https://weibo.com/1192329374/KnnG78Yf3?filter=hot&root_comment_id=0&type=comment',
     'accept-language': 'zh-CN,zh;q=0.9,en-CN;q=0.8,en;q=0.7,es-MX;q=0.6,es;q=0.5',
-    'cookie':  'SINAGLOBAL=6602183114630.345.1640853107889; UOR=,,login.sina.com.cn; SSOLoginState=1672033332; wvr=6; _s_tentry=-; Apache=3779125990160.492.1672033337757; ULV=1672033337771:9:2:1:3779125990160.492.1672033337757:1670478971009; webim_unReadCount=%7B%22time%22%3A1672473508523%2C%22dm_pub_total%22%3A79%2C%22chat_group_client%22%3A3%2C%22chat_group_notice%22%3A0%2C%22allcountNum%22%3A144%2C%22msgbox%22%3A0%7D; SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwz2CppVRmBASXr9CUGTt5bH08mJ6cxnVW2a-fLs9wPc78.; SUB=_2A25OtIXBDeRhGeBN7FYV8yvOyj-IHXVtw_AJrDV8PUJbmtANLVHykW9NRC0emhxo6A5SyNeMoeG5l35b0JGraX78; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; ALF=1675133584; PC_TOKEN=74410e4e95'
+    'cookie':  'SINAGLOBAL=6602183114630.345.1640853107889; UOR=,,login.sina.com.cn; SSOLoginState=1672033332; wvr=6; _s_tentry=-; Apache=3779125990160.492.1672033337757; ULV=1672033337771:9:2:1:3779125990160.492.1672033337757:1670478971009; wb_view_log_6374435213=1440*9002; webim_unReadCount=%7B%22time%22%3A1672627967074%2C%22dm_pub_total%22%3A88%2C%22chat_group_client%22%3A3%2C%22chat_group_notice%22%3A0%2C%22allcountNum%22%3A151%2C%22msgbox%22%3A0%7D; wb_timefeed_6374435213=1; SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwzMW9tVB80Fb8HYUxV0M0Fc2lPJuD3wps7dWTJPIA0J8I.; SUB=_2A25OtjoRDeRhGeBN7FYV8yvOyj-IHXVtwizZrDV8PUJbmtANLUfEkW9NRC0empgQxmHSD8HK51bE0DbRQTAhy-VR; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; ALF=1675220788; PC_TOKEN=a101daa09a'
 }
 
 headers2 = {
@@ -122,7 +132,7 @@ headers2 = {
     'sec-fetch-dest': 'empty',
     'referer': 'https://weibo.com/1192329374/KnnG78Yf3?filter=hot&root_comment_id=0&type=comment',
     'accept-language': 'zh-CN,zh;q=0.9,en-CN;q=0.8,en;q=0.7,es-MX;q=0.6,es;q=0.5',
-    'cookie':  '__bid_n=184f088b36db02316c4207; FPTOKEN=30$PAUX8Dz8K/L3a7V2YwGCjKWsdPWYpdp0GEgyWHa9MU8XuCcuBs7XF7oSV7uYfVic8WnnWwnR6R8t8OoggALL/uGULsE3+I9vX6U6penwfX4RmaHs1pVREzzj5VBpjaSTw+v/MwvwOK6QeKyAhqnUIK2t9wcBZX3cMqN9zVnYh9os71aDVFeGJMTn2TFXyAEF2a37hQHStk7Xpd6l3UHZUQhpW5AL1Yyzz4kk64KPIBbXaU0++gCdP2PJ3czzO39rAiMVSO+PSa4Z0LyAqOSBoyQPezIUROs9qenxeWW4HvC3GW3X7M7rlhbWsb2YnQI98gYlYaB49AzfG7NGOuUdIVQ8hPTyqtmLZpG4SJSylUNsk7alOoxvn4CtEcPG4XKG|p3zCWu7Rj0akcUNwwmA35f+iZRS5ltxNoRUzfjVLgOI=|10|750222c78c0c50edc08ab2f821fa5c27; SCF=AgMK9ULMpSret7t0LYUhCOFIC1B_rvBqdWoRrGPJlvV9_NLx19V9yjbTPIXLGTCuxMiXIKFcCgi6ngYQAyEwOOw.; SUB=_2A25OrUR-DeRhGeBN7FYV8yvOyj-IHXVqbmw2rDV6PUJbktANLRj4kW1NRC0empmtWo4k-RjNz3whIwHCfqreCsJd; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; SSOLoginState=1672033326; ALF=1674625326; _T_WM=01354eedaa035b0648b1b9ee9b8bce1c; FEID=v10-34b8a658a34ae086daaa4c407a69bb6d51318cd0; __xaf_fpstarttimer__=1672036633970; __xaf_thstime__=1672036634086; FPTOKEN=z4/KqF1G9tat54xcfZf1qOZHlI3HLc23CWXrKXT5H8OaAf3PsuJWIG9ZdXiFrj5PjxXAQEpG/LM5r9FTepjbTnQ3IiCfKggtCFqcua5mEGajHVsIMMW3Io46NNke1G96yLKiVpCW7fsadiLfTgs0wlFOI+MJrnmAnU2Kc+yGG0s7R+ggqmMFWxw9RuVHximylZu9FPU8BLOFKk52H9XoHHyKCiaD2pofknEI+PRhqHtdh2Dd9rqFBXh1Mm5KZwHoLjAYyiyl9i0z0prbqpxpRuI9IuRgrzBnBuKS0ITlD4VEI07qE7WPNUR4OU9/YB0TExx42lAufJvWrun2Ts7uYIekvwiFpVaDf0MaHbYDGCfNfBc5FTfac+dj4umWDdQo2+sN+Dhsza8hfcsjOI8qgA==|5G3rBgk+TOZ2u3VRb9VV83e9bfcevTNzr0gdZ9Lc2pQ=|10|a1fc083d54668516a59fb84ace4aff57; __xaf_fptokentimer__=1672036634166; WEIBOCN_FROM=1110006030; XSRF-TOKEN=430081; MLOGIN=1'
+#     'cookie':  '__bid_n=184f088b36db02316c4207; FPTOKEN=30$PAUX8Dz8K/L3a7V2YwGCjKWsdPWYpdp0GEgyWHa9MU8XuCcuBs7XF7oSV7uYfVic8WnnWwnR6R8t8OoggALL/uGULsE3+I9vX6U6penwfX4RmaHs1pVREzzj5VBpjaSTw+v/MwvwOK6QeKyAhqnUIK2t9wcBZX3cMqN9zVnYh9os71aDVFeGJMTn2TFXyAEF2a37hQHStk7Xpd6l3UHZUQhpW5AL1Yyzz4kk64KPIBbXaU0++gCdP2PJ3czzO39rAiMVSO+PSa4Z0LyAqOSBoyQPezIUROs9qenxeWW4HvC3GW3X7M7rlhbWsb2YnQI98gYlYaB49AzfG7NGOuUdIVQ8hPTyqtmLZpG4SJSylUNsk7alOoxvn4CtEcPG4XKG|p3zCWu7Rj0akcUNwwmA35f+iZRS5ltxNoRUzfjVLgOI=|10|750222c78c0c50edc08ab2f821fa5c27; SCF=AgMK9ULMpSret7t0LYUhCOFIC1B_rvBqdWoRrGPJlvV9_NLx19V9yjbTPIXLGTCuxMiXIKFcCgi6ngYQAyEwOOw.; SUB=_2A25OrUR-DeRhGeBN7FYV8yvOyj-IHXVqbmw2rDV6PUJbktANLRj4kW1NRC0empmtWo4k-RjNz3whIwHCfqreCsJd; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; SSOLoginState=1672033326; ALF=1674625326; _T_WM=01354eedaa035b0648b1b9ee9b8bce1c; FEID=v10-34b8a658a34ae086daaa4c407a69bb6d51318cd0; __xaf_fpstarttimer__=1672036633970; __xaf_thstime__=1672036634086; FPTOKEN=z4/KqF1G9tat54xcfZf1qOZHlI3HLc23CWXrKXT5H8OaAf3PsuJWIG9ZdXiFrj5PjxXAQEpG/LM5r9FTepjbTnQ3IiCfKggtCFqcua5mEGajHVsIMMW3Io46NNke1G96yLKiVpCW7fsadiLfTgs0wlFOI+MJrnmAnU2Kc+yGG0s7R+ggqmMFWxw9RuVHximylZu9FPU8BLOFKk52H9XoHHyKCiaD2pofknEI+PRhqHtdh2Dd9rqFBXh1Mm5KZwHoLjAYyiyl9i0z0prbqpxpRuI9IuRgrzBnBuKS0ITlD4VEI07qE7WPNUR4OU9/YB0TExx42lAufJvWrun2Ts7uYIekvwiFpVaDf0MaHbYDGCfNfBc5FTfac+dj4umWDdQo2+sN+Dhsza8hfcsjOI8qgA==|5G3rBgk+TOZ2u3VRb9VV83e9bfcevTNzr0gdZ9Lc2pQ=|10|a1fc083d54668516a59fb84ace4aff57; __xaf_fptokentimer__=1672036634166; WEIBOCN_FROM=1110006030; XSRF-TOKEN=430081; MLOGIN=1'
 }
 
 
@@ -135,6 +145,8 @@ def parseUid(uid):
 
     
 def getUserInfo(uid=6374435213):
+    
+    global session
     try:
         uid = int(uid)
     except:
@@ -142,8 +154,13 @@ def getUserInfo(uid=6374435213):
         uid = parseUid(uid)
         if not uid:
             return None
-    response = requests.get(url=f'https://weibo.com/ajax/profile/detail?uid={uid}', headers=headers)
+    response = session.get(f'https://weibo.com/ajax/profile/detail?uid={uid}')
+#     if session != "":
+#         response = session.get(f'https://weibo.com/ajax/profile/detail?uid={uid}')
+#     else:
+#         response = requests.get(url=f'https://weibo.com/ajax/profile/detail?uid={uid}', headers=headers)
     #print(response.text)
+    
     if response.status_code == 400:
         return {
             'errorMsg': '用户可能注销或者封号',
@@ -198,8 +215,8 @@ def getUserInfo(uid=6374435213):
 
 def getUserInfo2(uid=6374435213):
 
-    url = 'https://m.weibo.cn/api/container/getIndex?mod=pedit_more%3Fmod%3Dpedit_more&jumpfrom=weibocom&containerid=100505' + str(uid)
-    res = requests.get(url, headers=headers).text
+    url = 'https://m.weibo.cn/api/container/getIndex?mod=pedit_more%3Fmod%3Dpedit_more&jumpfrom=weibocom&containerid=100505' + str(uid) #6374435213
+    res = requests.get(url, headers=headers2).text
     info = json.loads(res)
     #print(info)
     
