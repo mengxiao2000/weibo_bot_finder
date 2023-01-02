@@ -6,11 +6,10 @@ import time
 import re
 import json
 import streamlit as st
-#from DecryptLogin import login
-#from PIL import Image
+from DecryptLogin import login
+from PIL import Image
+
 session = ""
-
-
 
 # 获取昵称用户对应的UID
 def get_uid(nickname):
@@ -134,7 +133,7 @@ def parseUid(uid):
     except:
         return None
 
-    
+@st.cache(allow_output_mutation=True, suppress_st_warning=True)
 def getUserInfo(uid=6374435213):
     
     global session
@@ -234,6 +233,7 @@ def run_info_spider(uid):
     df.to_csv('user_info.csv',mode='w', index=None)
 
 
+
 # 分析微博内容
 def wan_transfer(text):
     text = str(text)
@@ -285,6 +285,7 @@ def cal_origin(csv_name):
         return pd.DataFrame([[np.NAN for i in range(8)]],columns=['origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location', 'content_length', 'content_std','richness'])
 
 # 提取微博用户属性特征
+
 def wan_transfer(text):
     text = str(text)
     try:
@@ -343,7 +344,7 @@ def crawl_info(uid):
         uid = str(uid)
         run_info_spider(uid)
         get_user_weibo(uid)
-        #time.sleep(0.5)
+        time.sleep(0.5)
         #分析内容
         df_uid = cal_origin(str(uid)+'.csv')
         df_uid['uid'] = int(uid)
