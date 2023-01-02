@@ -7,7 +7,7 @@ import re
 import json
 import streamlit as st
 from DecryptLogin import login
-
+from PIL import Image
 session = ""
 
 # 微博登陆
@@ -18,6 +18,10 @@ def login_weibo():
     weibo = client.weibo(reload_history=True)
     # use the login function to login in weibo
     infos_return, session = weibo.login('me1', 'pass123', 'scanqr')
+    
+    image = Image.open('qrcode.png')
+    st.image(image, caption='Sunrise by the mountains')
+    
     return infos_return, session 
 
 # 获取昵称用户对应的UID
