@@ -93,8 +93,8 @@ class weiboScanqr():
     
     '''存储历史数据'''
     def savehistory(self, username, infos_return, session):
-        history_path = os.path.join(self.rootdir, self.website_name+'.pkl')
-        
+        #history_path = os.path.join(self.rootdir, self.website_name+'.pkl')
+        history_path = self.website_name+'.pkl'
         history_infos = {}
         if os.path.exists(history_path):
             fp = open(history_path, 'rb')
@@ -107,7 +107,8 @@ class weiboScanqr():
     
     '''导入历史数据'''
     def loadhistory(self, username):
-        history_path = os.path.join(self.rootdir, self.website_name+'.pkl')
+        #history_path = os.path.join(self.rootdir, self.website_name+'.pkl')
+        history_path = self.website_name+'.pkl'
         # 不存在历史文件
         if not os.path.exists(history_path): return None, None, True
         # 读取history文件
