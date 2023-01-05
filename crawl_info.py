@@ -1,3 +1,11 @@
+#########################################
+# 微博社交机器人在线识别
+# Funtion: 用户微博内容、个人身份信息抓取
+# Author: Xiao Meng
+# Email: mengxiaocntc@163.com
+# Update: 2023-01-05
+#########################################
+
 import requests
 import pandas as pd
 import numpy as np
@@ -173,7 +181,7 @@ def cal_origin(csv_name):
         return pd.DataFrame([[origin_rate, like_num, forward_num, comment_num, post_freq, post_location, content_length, content_std, richness, hashtag, at]], columns=['origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location', 'content_length', 'content_std', 'richness','hashtag', 'at'])
     
     except Exception as e:
-        st.write(e)
+        #st.write(e)
         return pd.DataFrame([[np.NAN for i in range(11)]],columns=['origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location', 'content_length', 'content_std','richness','hashtag', 'at'])
 
 
@@ -251,7 +259,7 @@ def crawl_info(uid):
         user_data = pd.merge(left=data, right=df_uid, on='uid', how='left')
         return user_data
     except Exception as e:
-        print(uid)
-        st.write(e)
+        pass
+        #st.write(e)
         
 
