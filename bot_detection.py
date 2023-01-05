@@ -1,9 +1,19 @@
+#####################
+# 微博社交机器人在线识别
+# Author: Xiao Meng
+# Email: mengxiaocntc@163.com
+# Update: 2023-01-05
+#####################
+
 import streamlit as st
 import crawl_info
 import pandas as pd
+import numpy as np
 import login
 from PIL import Image
-import requests 
+import requests
+import time
+
 
 st.set_page_config(
     page_title="Bot Finder",
@@ -44,17 +54,23 @@ def predict_bot(user_data):
 # 信息输入
 ###########
 
-col1_search, col2_search, col3_search  = st.columns(3)
+col1_search, col2_search = st.columns(2)
 col1_search.markdown('🔍微博用户查找选项：')
 select = col2_search.radio(
     "",
-    ('昵称', '用户UID'),index=0, horizontal=True, label_visibility="collapsed")
+    ('昵称', '用户ID', '批量用户ID'),index=0, horizontal=True, label_visibility="collapsed")
 
 if select == '昵称':
     st.text_input('请输入准确的用户昵称 (例如:人民日报)',key="user_name",help='根据用户昵称查找的原理是根据昵称搜索用户，对搜索到的第一个用户进行识别。')
-else:
-    st.text_input("输入用户UID (例如:6374435213或https://weibo.com/u/6374435213)", key="uid")
-
+elif select == '用户ID':
+    st.text_input("请输入用户ID (例如:6374435213或https://weibo.com/u/6374435213)", key="uid")
+elif select == '批量用户ID':
+    uploaded_file = st.file_uploader("请上传包含用户UID列的CSV文件：")
+    if uploaded_file is not None:
+        uid_df = pd.read_csv(uploaded_file)
+        st.write('表格预览：')
+        st.write(uid_df.head(100))
+    
     
 ###########
 # 识别结果
@@ -93,14 +109,49 @@ if st.button('🚀识别'):
                 show_info(user_data)
             else:
                 st.error('未查找到该用户，请检查昵称输入或使用用户UID进行查找！', icon="🚨")
-            
-    else:
+        
+    elif select == '用户ID':
         if (st.session_state.uid).strip() == "":
             st.error('用户UID不能为空！', icon="🚨")
         else:
             user_data = crawl_info.crawl_info((st.session_state.uid).strip())
             user_data = predict_bot(user_data)
             show_info(user_data)
+    elif select == '批量用户ID':
+        
+        if uploaded_file is not None:
+            if 'uid' in uid_df.columns: 
+                with st.spinner('正在执行 🚶 🚴 🛵 🚗 🏎️ 🚄 ...'):
+                    my_bar = st.progress(0)
+                    length = len(uid_df)
+                    uid_df = uid_df.reset_index()
+                    for idx, line in uid_df.iterrows():
+                        try:
+                            user_data = crawl_info.crawl_info(str(int(line['uid'])).strip())
+                            user_data = predict_bot(user_data)
+                            uid_df.loc[idx,'bot'] = user_data['bot'].values[0]
+                            uid_df.loc[idx,'bot_score'] = user_data['bot_prob'].values[0]
+                        except Exception as e:
+                            st.write(e)
+                            uid_df.loc[idx,'bot'] = np.NAN
+                            uid_df.loc[idx,'bot_score'] = np.NAN
+                        my_bar.progress((idx+1)/length)
+                        time.sleep(0.5)
+
+                    uid_csv = uid_df.to_csv(index=False).encode('utf-8')       
+                    st.write('识别完毕！')
+                    st.download_button(
+                        label="⏬Download data as CSV",
+                        data=uid_csv,
+                        file_name='result_bot.csv',
+                        mime='text/csv',
+                    )
+            else: 
+                st.error('检测到CSV表格不包含‘uid’列，请重新上传！', icon="🚨")
+            
+                
+        else:
+            st.error('请上传用户ID的CSV表格！', icon="🚨")
             
 
 ###########
@@ -121,13 +172,16 @@ with tab2:
     st.markdown('获取详情信息，请联系mengxiaocntc@163.com')
     
 with tab3:
+    st.markdown('## ❤️ 2023-01-05')
+    st.markdown('1. 增加了批量识别功能。')
+    
     st.markdown('## 🥱 2023-01-04')
     st.markdown('1. 更新模型，在训练数据中增加了微博话题机器人。')
     
     st.markdown('## 🔥 2023-01-03')
     st.markdown('1. 如无必要，勿增实体。')
     st.markdown('2. 删除了登陆功能。')
-    st.markdown('2. 简化了模型所需输入。')
+    st.markdown('3. 简化了模型所需输入。')
     
     st.markdown('## ⚽️ 2023-01-02')
     st.markdown('1. 增加了登陆功能从而获取cookie。')
