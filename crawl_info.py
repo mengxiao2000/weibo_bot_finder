@@ -4,7 +4,7 @@
 # Author: Xiao Meng
 # Email: mengxiaocntc@163.com
 # Update: 2023-01-05
-#########################################
+##########################################
 
 import requests
 import pandas as pd
@@ -165,41 +165,30 @@ def cal_origin(csv_name):
         
         richness = []
         content_length_list = []
+        hashtag_list = []
+        at_list = []
+        hashtag_list  = []
         for cont in csv_['text'].values:
             cont = str(cont).split('// @')[0]
             richness.append(cont)
             content_length_list.append(len(cont))
-
+            hashtag_list.append(str(cont).count('#'))
+            at_list.append(str(cont).count('@'))
+            
         richness = len(set(''.join(richness)))
-        
         content_length = np.mean(content_length_list)
         content_std = np.std(content_length_list)
-        
-        hashtag = np.mean([str(cont).count('#') for cont in csv_['text'].values])
-        at =  np.mean([str(cont).count('@') for cont in csv_['text'].values])
-        
+        hashtag = np.mean(hashtag_list)
+        at = np.mean(at_list)
+
         return pd.DataFrame([[origin_rate, like_num, forward_num, comment_num, post_freq, post_location, content_length, content_std, richness, hashtag, at]], columns=['origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location', 'content_length', 'content_std', 'richness','hashtag', 'at'])
     
     except Exception as e:
-        #st.write(e)
+        st.write(e)
         return pd.DataFrame([[np.NAN for i in range(11)]],columns=['origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location', 'content_length', 'content_std','richness','hashtag', 'at'])
 
 
 # 提取微博用户属性特征
-def wan_transfer(text):
-    text = str(text)
-    try:
-        if '万' in text:
-            num = float(text.strip('万'))
-            return int(num*10000)
-        elif '亿' in text:
-            num = float(text.strip('亿'))
-            return int(num*100000000)
-        else:
-            return int(text)
-    except:
-        return np.NAN
-
 # 昵称文本
 import re
 def nickname_digit(s):
@@ -244,6 +233,7 @@ def user_attr(data):
 ##################
 def crawl_info(uid):
     try:
+        #抓取信息
         uid = str(uid)
         uid = uid.strip('https://weibo.com/u/')
         get_user_info(uid)
