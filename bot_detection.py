@@ -7,6 +7,7 @@
 
 import streamlit as st
 import crawl_info
+import model
 import pandas as pd
 import numpy as np
 import login
@@ -32,23 +33,9 @@ st.write("\n  ")
 ############
 # 预测模型加载
 ############
-import pickle
-#import xgboost
-# load model from file 模型加载
-#random_forest = pickle.load(open("random_forest.pickle.dat", "rb"))
-xgb_cls = pickle.load(open("xgb_online.pickle.dat", "rb"))
-scaler = pickle.load(open("scale_online.pickle.dat", "rb"))
 
-def predict_bot(user_data):
-    user_input  = user_data[['verified','urank','mbrank','statuses_count','follow_count','followers_count','gender', 'description','followers_follow','origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location','statuses_follow', 'content_length','content_std', 'name_digit','name_length','richness', 'hashtag', 'at']]
-    user_input = scaler.transform(user_input)
-    user_data['bot'] = xgb_cls.predict(user_input)
-    user_data['bot_prob'] = xgb_cls.predict(user_input,output_margin=True)
-
-    return user_data
-
-
-
+model = model.BotModel()
+model.load_model()
 
 ###########
 # 信息输入
@@ -105,7 +92,7 @@ if st.button('🚀识别'):
         
             if pd.notna(uid):
                 user_data = crawl_info.crawl_info(str(uid))
-                user_data = predict_bot(user_data)
+                user_data = model.predict(user_data)
                 show_info(user_data)
             else:
                 st.error('未查找到该用户，请检查昵称输入或使用用户UID进行查找！', icon="🚨")
@@ -115,7 +102,7 @@ if st.button('🚀识别'):
             st.error('用户UID不能为空！', icon="🚨")
         else:
             user_data = crawl_info.crawl_info((st.session_state.uid).strip())
-            user_data = predict_bot(user_data)
+            user_data = model.predict(user_data)
             show_info(user_data)
     elif select == '批量用户ID':
         
@@ -128,7 +115,7 @@ if st.button('🚀识别'):
                     for idx, line in uid_df.iterrows():
                         try:
                             user_data = crawl_info.crawl_info(str(int(line['uid'])).strip())
-                            user_data = predict_bot(user_data)
+                            user_data = model.predict(user_data)
                             uid_df.loc[idx,'bot'] = user_data['bot'].values[0]
                             uid_df.loc[idx,'bot_score'] = user_data['bot_prob'].values[0]
                         except Exception as e:
@@ -172,6 +159,9 @@ with tab2:
     st.markdown('获取详情信息，请联系mengxiaocntc@163.com')
     
 with tab3:
+    st.markdown('## 🏠 2023-01-06')
+    st.markdown('1. 优化了代码和运行速度。')
+    
     st.markdown('## ❤️ 2023-01-05')
     st.markdown('1. 增加了批量识别功能。')
     
