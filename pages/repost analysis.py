@@ -4,6 +4,13 @@
 # Email: mengxiaocntc@163.com
 # Update: 2023-01-15
 #####################
+from pathlib import Path
+import sys
+
+import streamlit as st
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 
 import streamlit as st
 import model
@@ -183,6 +190,7 @@ if st.button('🚀分析'):
 ###########
 
     
+
 
 
 
