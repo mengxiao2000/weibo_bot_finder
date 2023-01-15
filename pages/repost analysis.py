@@ -20,7 +20,7 @@ import login
 from PIL import Image
 import requests
 import time
-from RepostSpider import RepostSpider
+from ..RepostSpider import RepostSpider
 import crawl_info
 from streamlit_echarts import st_echarts
 import streamlit.components.v1 as components
