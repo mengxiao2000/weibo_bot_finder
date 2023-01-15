@@ -15,10 +15,10 @@ from PIL import Image
 import requests
 import time
 
-
 st.set_page_config(
     page_title="Bot Finder",
     page_icon="🤖️",
+    initial_sidebar_state="collapsed",
 #     layout="wide",
 )
 
@@ -50,7 +50,7 @@ select = col2_search.radio(
 if select == '昵称':
     st.text_input('请输入准确的用户昵称 (例如:人民日报)',key="user_name",help='根据用户昵称查找的原理是根据昵称搜索用户，对搜索到的第一个用户进行识别。')
 elif select == '用户ID':
-    st.text_input("请输入用户ID (例如:6374435213或https://weibo.com/u/6374435213)", key="uid")
+    st.text_input("请输入用户ID (例如:6374435213或https://weibo.com/u/6374435213)：", key="uid")
 elif select == '批量用户ID':
     uploaded_file = st.file_uploader("请上传包含用户UID列的CSV文件：")
     if uploaded_file is not None:
@@ -140,7 +140,15 @@ if st.button('🚀识别'):
         else:
             st.error('请上传用户ID的CSV表格！', icon="🚨")
             
+# import streamlit.components.v1 as components
 
+# components.html(
+# '''
+# <script src="https://cdn.jsdelivr.net/npm/sharer.js@latest/sharer.min.js"></script>
+# <button class="button" data-sharer="weibo" data-title="" data-url="https://ellisonleao.github.io/sharer.js/">Share on Weibo</button>
+# '''
+# )
+            
 ###########
 # 其他信息
 ###########
@@ -159,6 +167,9 @@ with tab2:
     st.markdown('获取详情信息，请联系mengxiaocntc@163.com')
     
 with tab3:
+    st.markdown('## 🌃 2023-01-15')
+    st.markdown('1. 新增了转发分析功能。')
+    
     st.markdown('## 🏠 2023-01-06')
     st.markdown('1. 优化了代码和运行速度。')
     
