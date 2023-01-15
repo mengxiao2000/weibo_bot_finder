@@ -4,13 +4,9 @@
 # Email: mengxiaocntc@163.com
 # Update: 2023-01-15
 #####################
-from pathlib import Path
-import sys
 
-import streamlit as st
-
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-
+import sys 
+sys.path.append("..") 
 
 import streamlit as st
 import model
@@ -20,7 +16,7 @@ import login
 from PIL import Image
 import requests
 import time
-from ..RepostSpider import RepostSpider
+from RepostSpider import RepostSpider
 import crawl_info
 from streamlit_echarts import st_echarts
 import streamlit.components.v1 as components
