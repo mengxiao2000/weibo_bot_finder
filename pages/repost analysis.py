@@ -140,7 +140,7 @@ if st.button('🚀分析'):
             uid_json['nodes'] = [{'name':mid,
                                   'category':'Root',
                                   'value':999, 
-                                  'text':'',
+                                  'text':root_weibo['text'].values[0],
                                   'user':root_weibo['screen_name'].values[0]
                                   }]
             uid_json['links'] = []
