@@ -81,6 +81,7 @@ if st.button('🚀分析'):
             my_bar = st.progress(0)
             length = len(uid_df)
             for idx, line in uid_df.iterrows():
+                print_info.write(f"正在识别{idx}/{len(uid_df)} 🎈")
                 try:
                     user_data = crawl_info.crawl_info(str(int(line['uid'])).strip())
                     user_data = model.predict(user_data)
@@ -175,7 +176,7 @@ if st.button('🚀分析'):
                 )
                 .render_embed()
             )
-            components.html(c,height=500)
+            components.html(c,width=800, height=500)
             
 
            
