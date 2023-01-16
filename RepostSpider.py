@@ -147,6 +147,7 @@ class RepostSpider():
  
     # 构造转发结构 up_mid 和 root_mid
     def construct_repost_structure(self):
+        self.repost_df['created_at'] = pd.to_datetime(self.repost_df['created_at'])
         self.repost_df['up_mid'] = np.NAN # 上级微博
         self.repost_df['root_mid'] = self.mid # 根微博
         self.repost_df = self.repost_df.drop_duplicates('mid')
@@ -167,6 +168,7 @@ class RepostSpider():
                 for up_username in usernames:
                     #print(up_username)
                     up_line = self.repost_df.query('username == @up_username')
+                    up_line = up_line[up_line['created_at'] < line['created_at']]
                     #print(up_line)
                     if len(up_line) == 1:
                         up_mid =  up_line['mblogid'].values[0]
@@ -189,7 +191,8 @@ class RepostSpider():
                             pass
             else:
                 self.repost_df.loc[idx, 'up_mid'] = self.mid
-    
+                
+
         crawl_info.write("构造转发网络完成🎉 ")
         
     # 保存到csv
