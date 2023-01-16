@@ -26,10 +26,11 @@ from pyecharts import options as opts
 from pyecharts.charts import Graph
 from pyecharts.charts import Liquid
 from pyecharts.charts import Bar,Grid,Page
+from pyecharts.commons.utils import JsCode
 
 st.set_page_config(
     page_title="转发分析",
-    page_icon="🧊",
+    page_icon="🤖️",
 #     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -72,6 +73,7 @@ if st.button('🚀分析'):
             cookie = ""   
             spider = RepostSpider(mid, cookie, print_progres=True, repost_dir='./reposts/', root_path='root_weibo.csv')
             spider.run()
+            mid = spider.mid # 统一mid为62位
             
             # 批量识别
             print_info = st.empty()
@@ -81,7 +83,7 @@ if st.button('🚀分析'):
             my_bar = st.progress(0)
             length = len(uid_df)
             for idx, line in uid_df.iterrows():
-                print_info.write(f"正在识别{idx}/{len(uid_df)} 🎈")
+                print_info.write(f"正在识别{idx+1}/{len(uid_df)} 🎈")
                 try:
                     user_data = crawl_info.crawl_info(str(int(line['uid'])).strip())
                     user_data = model.predict(user_data)
@@ -92,7 +94,7 @@ if st.button('🚀分析'):
                     uid_df.loc[idx,'bot'] = np.NAN
                     uid_df.loc[idx,'bot_score'] = np.NAN
                 my_bar.progress((idx+1)/length)
-            
+            print_info.write("机器人识别完毕🎉 ")
             
             #uid_csv = uid_df.to_csv(index=False).encode('utf-8')
             uid_df.to_csv(f'./reposts/{mid}.csv')
@@ -132,12 +134,14 @@ if st.button('🚀分析'):
                 )
 
                 components.html(w ,width=300, height=200)
-
+            
             # 网络图
             uid_json = {}
             uid_json['nodes'] = [{'name':mid,
                                   'category':'Root',
                                   'value':999, 
+                                  'text':'',
+                                  'user':root_weibo['screen_name'].values[0]
                                   }]
             uid_json['links'] = []
             categories = [{"name":'Bot'},{"name":'Human'},{"name":'Root'}]
@@ -147,6 +151,8 @@ if st.button('🚀分析'):
                 node_info['name'] = line['mblogid']
                 node_info['category'] = ['Human','Bot'][int(line['bot'])]
                 node_info['value'] = line['bot_score']
+                node_info['text'] = str(line['text_raw'])
+                node_info['user'] = str(line['username'])
 
                 link_info = {}
                 link_info['source'] = line['up_mid']
@@ -154,6 +160,15 @@ if st.button('🚀分析'):
                 
                 uid_json['nodes'].append(node_info)
                 uid_json['links'].append(link_info)
+            
+
+            # 绘制转发网络
+            
+            js_code_str= '''
+            function(params){
+            return params.data.user + ': \n' + params.data.text;
+            }
+            '''
             
             st.markdown("**转发网络**", unsafe_allow_html=True)
             c = (
@@ -166,8 +181,10 @@ if st.button('🚀分析'):
                     repulsion=50,
                     is_roam=True,
                     is_focusnode=True,
+                    is_draggable=True,
                     linestyle_opts=opts.LineStyleOpts(curve=0.2),
                     label_opts=opts.LabelOpts(is_show=False),
+                    tooltip_opts=opts.TooltipOpts(formatter=JsCode(js_code_str),border_width=1),
                 )
                 .set_global_opts(
                     legend_opts=opts.LegendOpts(orient="vertical", pos_left="2%", pos_top="10%"),
