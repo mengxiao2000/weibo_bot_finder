@@ -16,11 +16,12 @@ import json
 import streamlit as st
 from PIL import Image
 
+
 # 获取昵称用户对应的UID
 def get_uid(nickname):
     
     try:
-        res = json.loads(requests.get(f'https://m.weibo.cn/api/container/getIndex?containerid=100103type%3D1%26q%3D{nickname}&page_type=searchall').text)
+        res = json.loads(requests.get(f'https://m.weibo.cn/api/container/getIndex?containerid=100103type%3D1%26q%3D{nickname}&page_type=searchall', timeout=3).text)
         try:
             uid = res['data']['cards'][0]['card_group'][0]['user']['id']
         except:
@@ -38,7 +39,7 @@ def clean_text(text):
 # 获取长推文
 def get_long_weibo(long_id):
     try:
-        long_text = requests.get(f'https://m.weibo.cn/statuses/extend?id={long_id}').json()['data']['longTextContent']
+        long_text = requests.get(f'https://m.weibo.cn/statuses/extend?id={long_id}', timeout=3).json()['data']['longTextContent']
         return long_text
     except Exception as e:
         return np.NAN
@@ -47,7 +48,7 @@ def get_long_weibo(long_id):
 def get_user_weibo(uid=6374435213, proxies=None):
     
     #x = requests.get(f'https://m.weibo.cn/api/container/getIndex?containerid=230413{uid}_-_WEIBO_SECOND_PROFILE_WEIBO&page_type=03&page=1', proxies=proxies, headers=headers).json()
-    x = requests.get(f'https://m.weibo.cn/api/container/getIndex?type=uid&value={uid}&containerid=107603{uid}',proxies=proxies).json()
+    x = requests.get(f'https://m.weibo.cn/api/container/getIndex?type=uid&value={uid}&containerid=107603{uid}',proxies=proxies, timeout=3).json()
     #print(x)
     if x.get('msg',0) ==  '这里还没有内容':
         with open('郑州暴雨-deleted_account.txt',mode='a',encoding='utf-8') as w:
@@ -104,7 +105,7 @@ def get_user_weibo(uid=6374435213, proxies=None):
 def get_user_info(uid=6374435213):
 
     url = 'https://m.weibo.cn/api/container/getIndex?mod=pedit_more%3Fmod%3Dpedit_more&jumpfrom=weibocom&containerid=100505' + str(uid) #6374435213
-    res = requests.get(url).text
+    res = requests.get(url, timeout=3).text
     info = json.loads(res)
     
     uid = info['data']['userInfo']['id']
@@ -231,6 +232,7 @@ def user_attr(data):
 ##################
 # 抓取信息并分析内容
 ##################
+@st.cache(allow_output_mutation=True)
 def crawl_info(uid):
     try:
         #抓取信息
