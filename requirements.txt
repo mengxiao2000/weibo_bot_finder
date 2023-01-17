@@ -6,3 +6,4 @@ tqdm==4.50.2
 scikit-learn==0.23.2
 streamlit-echarts==0.4.0
 pyecharts==2.0.1
+jieba==0.42.1
