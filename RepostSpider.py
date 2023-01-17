@@ -40,6 +40,7 @@ class RepostSpider():
         res = requests.get(f'https://m.weibo.cn/statuses/show?id={self.mid}').json()
         if res['ok'] == 1:
             # 微博内容信息
+            self.mid = res['data']['bid']
             mblogid = self.mid
             created_at = res['data']['created_at']
             mid = res['data']['mid']
