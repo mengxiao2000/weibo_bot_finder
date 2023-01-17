@@ -28,10 +28,17 @@ from pyecharts.charts import Liquid
 from pyecharts.charts import Bar,Grid,Page
 from pyecharts.commons.utils import JsCode
 
+from pyecharts import options as opts
+from pyecharts.charts import WordCloud
+from pyecharts.globals import SymbolType
+
+import jieba
+            
+    
 st.set_page_config(
     page_title="转发分析",
     page_icon="🤖️",
-#     layout="wide",
+    #layout="wide",
     initial_sidebar_state="collapsed",
 )
 
@@ -82,6 +89,7 @@ if st.button('🚀分析'):
             uid_df = uid_df.reset_index()
             my_bar = st.progress(0)
             length = len(uid_df)
+            
             for idx, line in uid_df.iterrows():
                 print_info.write(f"正在识别{idx+1}/{len(uid_df)} 🎈")
                 try:
@@ -111,19 +119,23 @@ if st.button('🚀分析'):
             atti = str(root_weibo['attitudes_count'].values[0])
             uid_df['bot'] = uid_df['bot'].fillna(0)
             
-            col1, col2 = st.columns([1.5,1])
-            
-
+            col1, col2 = st.columns([1.5,1],gap='medium')
+        
             with col1:
                 st.markdown("**发布者**", unsafe_allow_html=True)
                 st.markdown(root_weibo['screen_name'].values[0], unsafe_allow_html=True)
                 st.markdown("**微博内容**", unsafe_allow_html=True)
-                st.markdown(root_weibo['text'].values[0], unsafe_allow_html=True)
+                
+                if len(root_weibo['text'].values[0]) >120:
+                    show_content =root_weibo['text'].values[0][:120] + '... （内容过长已省略）'
+                else:
+                    show_content =root_weibo['text'].values[0]
+                    
+                st.markdown(show_content, unsafe_allow_html=True)
                 st.markdown("转发数:"+repo+" 评论数:"+comm+" 点赞数:"+atti, unsafe_allow_html=True)
        
             with col2:
-                pass
-                st.markdown('**社交机器人比例**', unsafe_allow_html=True)
+                st.markdown('**💧社交机器人比例**', unsafe_allow_html=True)
                 w = (
                     Liquid(init_opts=opts.InitOpts(width='222px',height='222px'))
                     .add("lq", [bot_num/(all_num+1)], 
@@ -151,7 +163,7 @@ if st.button('🚀分析'):
                 node_info['name'] = line['mblogid']
                 node_info['category'] = ['Human','Bot'][int(line['bot'])]
                 node_info['value'] = line['bot_score']
-                node_info['text'] = str(line['text_raw'])
+                node_info['text'] = str(line['text_raw']).split('//@')[0]
                 node_info['user'] = str(line['username'])
 
                 link_info = {}
@@ -169,42 +181,87 @@ if st.button('🚀分析'):
             return params.data.user + ': \n' + params.data.text;
             }
             '''
+            white1, c1, white2, = st.columns([0.05, 1, 0.05])
+            with c1:
+                st.markdown("**🐟转发网络**", unsafe_allow_html=True)
+                c = (
+                    Graph(init_opts=opts.InitOpts(width='600px',height='500px',bg_color='#F8F8F8'))
+                    .add(
+                        "",
+                        uid_json['nodes'],
+                        uid_json['links'],
+                        categories,
+                        repulsion=50,
+                        is_roam=True,
+                        is_focusnode=True,
+                        is_draggable=True,
+                        linestyle_opts=opts.LineStyleOpts(curve=0.2),
+                        label_opts=opts.LabelOpts(is_show=False),
+                        tooltip_opts=opts.TooltipOpts(formatter=JsCode(js_code_str),border_width=1),
+                    )
+                    .set_global_opts(
+                        legend_opts=opts.LegendOpts(orient="vertical", pos_left="2%", pos_top="10%"),
+                        #title_opts=opts.TitleOpts(title="Reposting network"),
+
+                    )
+                    .render_embed()
+                )
+                components.html(c,width=600, height=500)
+
+            # 词云图
             
-            st.markdown("**转发网络**", unsafe_allow_html=True)
-            c = (
-                Graph(init_opts=opts.InitOpts(width='800px',height='500px'))
-                .add(
-                    "",
-                    uid_json['nodes'],
-                    uid_json['links'],
-                    categories,
-                    repulsion=50,
-                    is_roam=True,
-                    is_focusnode=True,
-                    is_draggable=True,
-                    linestyle_opts=opts.LineStyleOpts(curve=0.2),
-                    label_opts=opts.LabelOpts(is_show=False),
-                    tooltip_opts=opts.TooltipOpts(formatter=JsCode(js_code_str),border_width=1),
+            from pyecharts import options as opts
+            from pyecharts.charts import WordCloud
+            from pyecharts.globals import SymbolType
+            
+            bot = uid_df.query('bot == 1')
+            human = uid_df.query('bot == 0')
+            
+            
+            
+            white1, wd1, white2, wd2, white3, = st.columns([0.05, 1, 0.2,1, 0.5,])
+        
+            with wd1:
+                st.markdown("**🌧️机器人发布内容词云图**", unsafe_allow_html=True)
+                wordcount = {}
+                stopwords = [w.strip('\n') for w in open('hit-stopwords.txt','r').readlines()]
+                for idx, line in bot.iterrows():
+                    all_words = jieba.lcut(line['text_raw'].split('//@')[0])
+                    for word in all_words:
+                        if word not in stopwords:
+                            wordcount[word] = wordcount.get(word, 0)+1
+                words = sorted(wordcount.items(), key=lambda x: x[1], reverse=True)[:50]
+                wc1 = (
+                    WordCloud(init_opts=opts.InitOpts(width='300px',height='300px',bg_color='#F8F8F8'))
+                    .add("", words, word_size_range=[10, 100], shape=SymbolType.DIAMOND)
+                   # .set_global_opts(title_opts=opts.TitleOpts(title="机器人发布内容词云图"))
+                    .render_embed()
                 )
-                .set_global_opts(
-                    legend_opts=opts.LegendOpts(orient="vertical", pos_left="2%", pos_top="10%"),
-                    #title_opts=opts.TitleOpts(title="Reposting network"),
-                    
-                )
-                .render_embed()
-            )
-            components.html(c,width=800, height=500)
+                
+                components.html(wc1,width=300, height=300)
+       
+            with wd2:
+                st.markdown("**☁️人类发布内容词云图**", unsafe_allow_html=True)
+                wordcount = {}
+                stopwords = [w.strip('\n') for w in open('hit-stopwords.txt','r').readlines()]
+                for idx, line in human.iterrows():
+                    all_words = jieba.lcut(line['text_raw'].split('//@')[0])
+                    for word in all_words:
+                        if word not in stopwords:
+                            wordcount[word] = wordcount.get(word, 0)+1
+                words = sorted(wordcount.items(), key=lambda x: x[1], reverse=True)[:50]
+                wc2 = (
+                    WordCloud(init_opts=opts.InitOpts(width='300px',height='300px',bg_color='#F8F8F8'))
+                    .add("", words, word_size_range=[10, 100], shape=SymbolType.DIAMOND)
+                   # .set_global_opts(title_opts=opts.TitleOpts(title="人类发布内容词云图"))
+                    .render_embed()
+                ) 
+
+                components.html(wc2,width=300, height=300)
             
 
-           
-            
-            
+
 ###########
 # 其他信息
 ###########
-
-    
-
-
-
 
