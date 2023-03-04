@@ -177,7 +177,7 @@ with tab2:
     
 with tab3:
     st.markdown('## 🐱 2023-03-04')
-    st.markdown('1. 完善了批量识别的页码提示。')
+    st.markdown('1. 完善了批量识别的页面。')
     
     st.markdown('## 🌃 2023-01-15')
     st.markdown('1. 新增了转发分析功能。')
