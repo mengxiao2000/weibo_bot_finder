@@ -8,7 +8,9 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import precision_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-
+from sqlite3 import Cursor
+import pymysql
+import streamlit as st
 class BotModel():
     '''
     Function: 社交机器人预测模型的训练、存储、载入、预测相关操作。
@@ -48,6 +50,7 @@ class BotModel():
         precision_xgb = precision_score(y_test, y_pred)*100
         print(acc_xgb, recall_xgb, precision_xgb, f1_xgb)
 
+
     
     # 预测
     def predict(self, user_data):
@@ -56,6 +59,8 @@ class BotModel():
             user_input = self.scaler.transform(user_input)
             user_data['bot'] = self.model.predict(user_input)
             user_data['bot_prob'] = self.model.predict(user_input,output_margin=True)
+            #st.write('sssss')
+            self.update(int(float(user_data['uid'].values[0])), user_data['bot_prob'].values[0], user_data['bot'].values[0])
             return user_data
         except Exception as e:
             return np.NAN
@@ -75,3 +80,16 @@ class BotModel():
        'content_length', 'content_std', 'richness', 'hashtag', 'at']
         
         return pd.DataFrame(sample_data, columns=columns)
+    
+    # 上传数据
+    def update(self, uid, bot_score, bot):
+        try:
+            mysql = pymysql.connect(host=st.secrets["db_host"], port=23857, user=st.secrets["db_username"], passwd=st.secrets["db_password"], database="Bot_check")
+            
+            cursor = mysql.cursor()
+            cursor.execute(f"INSERT INTO Bot (uid, bot_score, bot) VALUES ({uid}, {bot_score}, {bot})")
+            res = cursor.fetchall()
+            mysql.commit()
+            
+        except Exception as e:
+            pass
