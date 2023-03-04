@@ -2,7 +2,7 @@
 # 微博社交机器人在线识别
 # Author: Xiao Meng
 # Email: mengxiaocntc@163.com
-# Update: 2023-01-05
+# Update: 2023-03-04
 #####################
 
 import streamlit as st
@@ -52,7 +52,15 @@ if select == '昵称':
 elif select == '用户ID':
     st.text_input("请输入用户ID (例如:6374435213或https://weibo.com/u/6374435213)：", key="uid")
 elif select == '批量用户ID':
-    uploaded_file = st.file_uploader("请上传包含用户UID列的CSV文件：")
+    uploaded_file = st.file_uploader("请上传包含'uid'列的CSV文件：")
+    test_df = pd.read_csv('test_upload.csv').to_csv(index=False).encode("utf-8")
+    st.download_button(
+        label="下载示例文件",
+        data=test_df,
+        file_name='test_bot.csv',
+        mime='text/csv',
+    )
+    
     if uploaded_file is not None:
         uid_df = pd.read_csv(uploaded_file)
         st.write('表格预览：')
@@ -118,16 +126,16 @@ if st.button('🚀识别'):
                             uid_df.loc[idx,'bot'] = user_data['bot'].values[0]
                             uid_df.loc[idx,'bot_score'] = user_data['bot_prob'].values[0]
                         except Exception as e:
-                            st.write(e)
+                            #st.write(e)
                             uid_df.loc[idx,'bot'] = np.NAN
                             uid_df.loc[idx,'bot_score'] = np.NAN
                         my_bar.progress((idx+1)/length)
-                        time.sleep(0.5)
+                        #time.sleep(0.5)
 
-                    uid_csv = uid_df.to_csv(index=False).encode('utf-8')       
+                    uid_csv = uid_df.to_csv(index=False).encode('utf-8') 
                     st.write('识别完毕！')
                     st.download_button(
-                        label="⏬Download data as CSV",
+                        label="⏬ Download data as CSV",
                         data=uid_csv,
                         file_name='result_bot.csv',
                         mime='text/csv',
@@ -138,6 +146,7 @@ if st.button('🚀识别'):
                 
         else:
             st.error('请上传用户ID的CSV表格！', icon="🚨")
+
             
 # import streamlit.components.v1 as components
 
@@ -162,13 +171,13 @@ with tab1:
     
 with tab2:
     st.markdown('该工具通过提取微博可公开获取的社交账号信息，基于XGboost模型识别微博平台中的社交机器人，当前模型性能（准确率：94.12%，召回率：94.34%）。')
-    st.markdown('注：模型预测结果仅表明该账号是否有类似社交机器人的行为，预测结果仅供参考。')
+    
+    st.markdown('注：模型预测结果仅表明该账号是否有类似社交机器人的行为，预测结果仅供参考。该工具仅供学术交流使用，请勿用于商业目的。')
     st.markdown('获取详情信息，请联系mengxiaocntc@163.com')
     
 with tab3:
-    st.markdown('## 🌃 2023-01-16')
-    st.markdown('1. 新增了转发分析-词云功能。')
-    st.markdown('2. 完善了转发搜索。')
+    st.markdown('## 🐱 2023-03-04')
+    st.markdown('1. 完善了批量识别的页码提示。')
     
     st.markdown('## 🌃 2023-01-15')
     st.markdown('1. 新增了转发分析功能。')
