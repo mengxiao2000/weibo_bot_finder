@@ -50,7 +50,7 @@ select = col2_search.radio(
 if select == '昵称':
     st.text_input('请输入准确的用户昵称 (例如:人民日报)',key="user_name",help='根据用户昵称查找的原理是根据昵称搜索用户，对搜索到的第一个用户进行识别。')
 elif select == '用户ID':
-    st.text_input("请输入用户ID (例如:6374435213或https://weibo.com/u/6374435213)：", key="uid")
+    st.text_input("请输入用户ID (例如:6374435213或https://weibo.com/u/6374435213 )：", key="uid")
 elif select == '批量用户ID':
     uploaded_file = st.file_uploader("请上传包含'uid'列的CSV文件：")
     test_df = pd.read_csv('test_upload.csv').to_csv(index=False).encode("utf-8")
