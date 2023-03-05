@@ -2,7 +2,7 @@
 # 微博社交机器人在线识别
 # Author: Xiao Meng
 # Email: mengxiaocntc@163.com
-# Update: 2023-03-04
+# Update: 2023-03-05
 #####################
 
 import streamlit as st
@@ -14,6 +14,8 @@ import login
 from PIL import Image
 import requests
 import time
+from sqlite3 import Cursor
+import pymysql
 
 st.set_page_config(
     page_title="Bot Finder",
@@ -24,11 +26,31 @@ st.set_page_config(
 
 st.markdown('# <center> 🤖️ Bot Finder</center>', unsafe_allow_html=True)
 st.markdown(' <center> 微博社交机器人探测器 🛸 </center>', unsafe_allow_html=True)
-st.write("\n  ")
-st.write("\n  ")
-st.write("\n  ")
-st.write("\n  ")
 
+
+
+####################
+#显示已经识别的机器人数量
+####################
+def get_bot_num():
+    try:
+        mysql = pymysql.connect(host=st.secrets["db_host"], port=23857, user=st.secrets["db_username"], passwd=st.secrets["db_password"], database="Bot_check")
+
+        cursor = mysql.cursor()
+        cursor.execute(f"SELECT COUNT(*) AS nums FROM Bot WHERE bot=1")
+        res = cursor.fetchall()
+        mysql.commit()
+
+        st.markdown(f' <center> 已经累计发现{res[0][0]}个疑似机器人账号 </center>', unsafe_allow_html=True)
+    except:
+        pass
+    
+get_bot_num()
+
+st.write("\n  ")
+st.write("\n  ")
+st.write("\n  ")
+st.write("\n  ")
 
 ############
 # 预测模型加载
@@ -74,20 +96,29 @@ elif select == '批量用户ID':
 # 显示信息
 def show_info(user_data):
     info_col1, info_col2 = st.columns(2)
-    # 显示头像
-    res = requests.get(user_data['profile_image_url'].values[0])
-    with open("profile_image.png","wb") as f:
-        f.write(res.content)
-    image = Image.open("profile_image.png")
-    info_col1.image(image, caption='')
-    # 显示昵称
-    info_col2.metric("用户昵称", user_data['screen_name'].values[0])
-
+    
+    try:
+        # 显示头像
+        res = requests.get(user_data['profile_image_url'].values[0])
+        with open("profile_image.png","wb") as f:
+            f.write(res.content)
+        image = Image.open("profile_image.png")
+        info_col1.image(image, caption='')
+        # 显示昵称
+        info_col2.metric("用户昵称", user_data['screen_name'].values[0])
+        
+    except:
+        info_col1.markdown('获取用户信息失败，以下为根据用户内容的预测结果。')
+        info_col2.metric("用户uid", user_data['uid'].values[0])
+        pass
+ 
+    
     # 显示预测结果
     result_col1, result_col2 = st.columns(2)
-    result_col1.metric("是否是机器人", ['否','是'][user_data['bot'].values[0]])
+    
+    result_col1.metric("是否是机器人", ['否','是'][int(user_data['bot'].values[0])])
     result_col2.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。",)
-    st.markdown('😭识别结果不满意？[点击评论](https://docs.qq.com/sheet/DYXJNRGZzWnlJdmJk)，提出建议，帮助我们改进！')
+    #st.markdown('😭识别结果不满意？[点击评论](https://docs.qq.com/sheet/DYXJNRGZzWnlJdmJk)，提出建议，帮助我们改进！')
 
 
 if st.button('🚀识别'):
@@ -109,8 +140,10 @@ if st.button('🚀识别'):
         if (st.session_state.uid).strip() == "":
             st.error('用户UID不能为空！', icon="🚨")
         else:
+            
             user_data = crawl_info.crawl_info((st.session_state.uid).strip())
             user_data = model.predict(user_data)
+
             show_info(user_data)
     elif select == '批量用户ID':
         if uploaded_file is not None:
@@ -176,6 +209,10 @@ with tab2:
     st.markdown('获取详情信息，请联系mengxiaocntc@163.com')
     
 with tab3:
+    st.markdown('## 🍀 2023-03-05')
+    st.markdown('1. 针对用户信息抓取失败导致信息不全下的报错问题进行调整。')
+    st.markdown('2. 将预测结果保存到云数据库。')
+    
     st.markdown('## 🐱 2023-03-04')
     st.markdown('1. 完善了批量识别的页面。')
     
