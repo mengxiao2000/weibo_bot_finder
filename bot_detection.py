@@ -2,7 +2,7 @@
 # 微博社交机器人在线识别
 # Author: Xiao Meng
 # Email: mengxiaocntc@163.com
-# Update: 2023-03-22
+# Update: 2023-03-05
 #####################
 
 import streamlit as st
@@ -121,7 +121,6 @@ def show_info(user_data):
     #st.markdown('😭识别结果不满意？[点击评论](https://docs.qq.com/sheet/DYXJNRGZzWnlJdmJk)，提出建议，帮助我们改进！')
 
 # 缓存识别结果
-@st.cache(allow_output_mutation=True)
 def check_account(uid):
     user_data = crawl_info.crawl_info(str(int(uid)).strip())
     user_data = model.predict(user_data)
@@ -242,6 +241,7 @@ with tab3:
     st.markdown('3. 添加昵称查找和UID查找两种查找方式。')
     st.markdown('4. 目前仍然存在因cookie过期而无法长期使用的问题。')
     
+
 
 
 
