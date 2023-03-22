@@ -2,7 +2,7 @@
 # 微博社交机器人在线识别
 # Author: Xiao Meng
 # Email: mengxiaocntc@163.com
-# Update: 2023-03-05
+# Update: 2023-03-22
 #####################
 
 import streamlit as st
@@ -120,7 +120,14 @@ def show_info(user_data):
     result_col2.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。",)
     #st.markdown('😭识别结果不满意？[点击评论](https://docs.qq.com/sheet/DYXJNRGZzWnlJdmJk)，提出建议，帮助我们改进！')
 
-
+# 缓存识别结果
+@st.cache(allow_output_mutation=True)
+def check_account(uid):
+    user_data = crawl_info.crawl_info(str(int(uid)).strip())
+    user_data = model.predict(user_data)
+    return user_data
+    
+# 识别过程
 if st.button('🚀识别'):
     if select == '昵称':
         if (st.session_state.user_name).strip() == "":
@@ -154,8 +161,9 @@ if st.button('🚀识别'):
                     uid_df = uid_df.reset_index()
                     for idx, line in uid_df.iterrows():
                         try:
-                            user_data = crawl_info.crawl_info(str(int(line['uid'])).strip())
-                            user_data = model.predict(user_data)
+                            
+                            user_data = check_account(line['uid'])
+                            
                             uid_df.loc[idx,'bot'] = user_data['bot'].values[0]
                             uid_df.loc[idx,'bot_score'] = user_data['bot_prob'].values[0]
                         except Exception as e:
@@ -181,14 +189,6 @@ if st.button('🚀识别'):
             st.error('请上传用户ID的CSV表格！', icon="🚨")
 
             
-# import streamlit.components.v1 as components
-
-# components.html(
-# '''
-# <script src="https://cdn.jsdelivr.net/npm/sharer.js@latest/sharer.min.js"></script>
-# <button class="button" data-sharer="weibo" data-title="" data-url="https://ellisonleao.github.io/sharer.js/">Share on Weibo</button>
-# '''
-# )
             
 ###########
 # 其他信息
