@@ -110,9 +110,19 @@ def get_user_info(uid=6374435213):
     try:
         url = 'https://m.weibo.cn/api/container/getIndex?&containerid=100505' + str(uid) #6374435213
 
-        headers={'user-agent':'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'}
+        headers={
+#             'cookie':'__bid_n=184f088b36db02316c4207; FPTOKEN=30$PAUX8Dz8K/L3a7V2YwGCjKWsdPWYpdp0GEgyWHa9MU8XuCcuBs7XF7oSV7uYfVic8WnnWwnR6R8t8OoggALL/uGULsE3+I9vX6U6penwfX4RmaHs1pVREzzj5VBpjaSTw+v/MwvwOK6QeKyAhqnUIK2t9wcBZX3cMqN9zVnYh9os71aDVFeGJMTn2TFXyAEF2a37hQHStk7Xpd6l3UHZUQhpW5AL1Yyzz4kk64KPIBbXaU0++gCdP2PJ3czzO39rAiMVSO+PSa4Z0LyAqOSBoyQPezIUROs9qenxeWW4HvC3GW3X7M7rlhbWsb2YnQI98gYlYaB49AzfG7NGOuUdIVQ8hPTyqtmLZpG4SJSylUNsk7alOoxvn4CtEcPG4XKG|p3zCWu7Rj0akcUNwwmA35f+iZRS5ltxNoRUzfjVLgOI=|10|750222c78c0c50edc08ab2f821fa5c27; FEID=v10-34b8a658a34ae086daaa4c407a69bb6d51318cd0; __xaf_fpstarttimer__=1672746204204; __xaf_thstime__=1672746204413; __xaf_fptokentimer__=1672746204472; _T_WM=acfe59091cff25ca515c43084fa56bf5; FPTOKEN=UtWU5HZ4prP51f8qCYgxbKSK/TQMZu13r1mkhEVUFVL3jn9loTt1YqH2N2XKG8Alg+/qaoQI9glTbSnc+lXDP6chC1Fj6JR3D0yC2x+NMEQekuxLgFLTDwR5dZHL4sUpXKdTT4olcN89q7hsVOSzCYdXVU+lHeLFmPmwKLTC1dOgGQqATv0L4gPXck22BPrzCoxMg9rrzfNaoWwILGX3BkhRQQ0qNxo2I3WUxU4dgkWEwc+zR3T4NT5pS1Ge3wkmP80+7EjWXMarDura/pEhpzEMQm2Vcq3Zkd64+FMe6UXKvn+ZfKiv1SuHOK56+GNh/gNQkjx3LNMo3Wu8cF2Rcs+kLiQEX+wFUUkRCfCZwOtevOUdojMzUOkWqG4YpOk/3rIxssrl8ZFHFDvtj9AVZg==|TuiQix5OYpEfrIYCNne+iyMvJ6RhGdNjjMNMVr3+Bvo=|10|0942a327380071e355ae786d86e0ca91; SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwzrGNAVpz6_oK3F9U9kl5moTBhD7m6rWF8qtdahRdpSuk.; SSOLoginState=1679454751; ALF=1682046751; XSRF-TOKEN=8be8fe; WEIBOCN_FROM=1110006030; MLOGIN=0; M_WEIBOCN_PARAMS=luicode%3D10000011%26lfid%3D1005056105713761%26fid%3D1005056105713761%26uicode%3D10000011; mweibo_short_token=209fa3761e',
+            'sec-ch-ua': '"Google Chrome";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"macOS"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'same-origin',
+            'upgrade-insecure-requests': '1',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
+        }
 
-        res = requests.get(url, timeout=1).text
+        res = requests.get(url, timeout=1, headers=headers).text
         info = json.loads(res)
  
         uid = uid
