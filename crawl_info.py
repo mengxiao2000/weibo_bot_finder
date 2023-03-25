@@ -3,7 +3,7 @@
 # Funtion: 用户微博内容、个人身份信息抓取
 # Author: Xiao Meng
 # Email: mengxiaocntc@163.com
-# Update: 2023-01-05
+# Update: 2023-03-25
 ##########################################
 
 import requests
@@ -265,7 +265,6 @@ def user_attr(data):
 ##################
 # 抓取信息并分析内容
 ##################
-@st.cache(allow_output_mutation=True)
 def crawl_info(uid):
     try:
         #抓取信息
