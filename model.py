@@ -60,7 +60,8 @@ class BotModel():
             user_data['bot'] = self.model.predict(user_input)
             user_data['bot_prob'] = self.model.predict(user_input,output_margin=True)
             #st.write('sssss')
-            self.update(int(float(user_data['uid'].values[0])), user_data['bot_prob'].values[0], user_data['bot'].values[0])
+            
+            #self.update(int(float(user_data['uid'].values[0])), user_data['bot_prob'].values[0], user_data['bot'].values[0])
             return user_data
         except Exception as e:
             return np.NAN
@@ -84,7 +85,7 @@ class BotModel():
     # 上传数据
     def update(self, uid, bot_score, bot):
         try:
-            mysql = pymysql.connect(host=st.secrets["db_host"], port=23857, user=st.secrets["db_username"], passwd=st.secrets["db_password"], database="Bot_check")
+            mysql = pymysql.connect(host=st.secrets["db_host"], port=st.secrets["port"], user=st.secrets["db_username"], passwd=st.secrets["db_password"], database="Bot_check")
             
             cursor = mysql.cursor()
             cursor.execute(f"INSERT INTO Bot (uid, bot_score, bot) VALUES ({uid}, {bot_score}, {bot})")
