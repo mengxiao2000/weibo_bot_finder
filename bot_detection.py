@@ -34,7 +34,7 @@ st.markdown(' <center> 微博社交机器人探测器 🛸 </center>', unsafe_al
 ####################
 def get_bot_num():
     try:
-        mysql = pymysql.connect(host=st.secrets["db_host"], port=23857, user=st.secrets["db_username"], passwd=st.secrets["db_password"], database="Bot_check")
+        mysql = pymysql.connect(host=st.secrets["db_host"], port=st.secrets["port"], user=st.secrets["db_username"], passwd=st.secrets["db_password"], database="Bot_check")
 
         cursor = mysql.cursor()
         cursor.execute(f"SELECT COUNT(*) AS nums FROM Bot WHERE bot=1")
@@ -121,7 +121,6 @@ def show_info(user_data):
     #st.markdown('😭识别结果不满意？[点击评论](https://docs.qq.com/sheet/DYXJNRGZzWnlJdmJk)，提出建议，帮助我们改进！')
 
 # 缓存识别结果
-st.cache_data
 def check_account(uid):
     user_data = crawl_info.crawl_info(str(int(uid)).strip())
     user_data = model.predict(user_data)
