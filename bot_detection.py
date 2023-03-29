@@ -40,9 +40,10 @@ def get_bot_num():
         cursor.execute(f"SELECT COUNT(*) AS nums FROM Bot WHERE bot=1")
         res = cursor.fetchall()
         mysql.commit()
-
+        
         st.markdown(f' <center> 已经累计发现{res[0][0]}个疑似机器人账号 </center>', unsafe_allow_html=True)
-    except:
+    except Exception as e:
+        st.write(e)
         pass
     
 get_bot_num()
