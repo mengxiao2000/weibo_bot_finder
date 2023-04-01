@@ -93,4 +93,5 @@ class BotModel():
             mysql.commit()
             
         except Exception as e:
+            st.write(e)
             pass
