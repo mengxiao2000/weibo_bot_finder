@@ -61,7 +61,7 @@ class BotModel():
             user_data['bot_prob'] = self.model.predict(user_input,output_margin=True)
             #st.write('sssss')
             
-            #self.update(int(float(user_data['uid'].values[0])), user_data['bot_prob'].values[0], user_data['bot'].values[0])
+            self.update(int(float(user_data['uid'].values[0])), user_data['bot_prob'].values[0], user_data['bot'].values[0])
             return user_data
         except Exception as e:
             return np.NAN
