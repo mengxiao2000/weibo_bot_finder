@@ -46,7 +46,7 @@ def get_bot_num():
         st.write(e)
         pass
     
-get_bot_num()
+#get_bot_num()
 
 st.write("\n  ")
 st.write("\n  ")
