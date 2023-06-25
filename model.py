@@ -21,6 +21,7 @@ class BotModel():
         self.scaler = ""
         
     # 载入模型
+    @st.cache_resource
     def load_model(self, scale_path="scale_online.pickle.dat",xgb_path="xgb_online.pickle.dat"):
         self.scaler = pickle.load(open(scale_path, "rb"))
         self.model = pickle.load(open(xgb_path, "rb"))
