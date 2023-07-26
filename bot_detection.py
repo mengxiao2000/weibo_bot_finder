@@ -71,7 +71,7 @@ select = col2_search.radio(
     ('昵称', '用户ID', '批量用户ID'),index=0, horizontal=True, label_visibility="collapsed")
 
 if select == '昵称':
-    st.text_input('请输入准确的用户昵称 (例如:人民日报)',key="user_name",help='根据用户昵称查找的原理是根据昵称搜索用户，对搜索到的第一个用户进行识别。')
+    st.text_input('请输入准确的用户昵称 (例如:微博小秘书)',key="user_name",help='根据用户昵称查找的原理是根据昵称搜索用户，对搜索到的第一个用户进行识别。')
 elif select == '用户ID':
     st.text_input("请输入用户ID (例如:6374435213或https://weibo.com/u/6374435213 )：", key="uid")
 elif select == '批量用户ID':
