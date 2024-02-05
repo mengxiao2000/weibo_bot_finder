@@ -265,7 +265,8 @@ def user_attr(data):
 ##################
 # 抓取信息并分析内容
 ##################
-@st.cache_data
+# @st.cache_data
+
 def crawl_info(uid):
     try:
         #抓取信息
