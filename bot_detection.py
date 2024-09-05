@@ -17,12 +17,12 @@ import time
 from sqlite3 import Cursor
 import pymysql
 
-st.set_page_config(
-    page_title="Bot Finder",
-    page_icon="🤖️",
-    initial_sidebar_state="collapsed",
-#     layout="wide",
-)
+# st.set_page_config(
+#     page_title="Bot Finder",
+#     page_icon="🤖️",
+#     initial_sidebar_state="collapsed",
+# #     layout="wide",
+# )
 
 st.markdown('# <center> 🤖️ Bot Finder</center>', unsafe_allow_html=True)
 st.markdown(' <center> 微博社交机器人探测器 🛸 </center>', unsafe_allow_html=True)
