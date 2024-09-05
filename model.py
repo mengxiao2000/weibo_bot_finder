@@ -22,7 +22,7 @@ class BotModel():
         
    # 载入模型
     def load_model(self, scale_path="scale_online.pickle.dat",xgb_path="xgb_online.json"):
-        self.scaler = pickle.load(scale_path, "rb"))
+        self.scaler = pickle.load(open(scale_path, "rb"))
         self.model = xgboost.Booster()
         self.model.load_model(xgb_path)
     
