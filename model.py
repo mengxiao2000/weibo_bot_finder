@@ -20,10 +20,11 @@ class BotModel():
         self.model = ""
         self.scaler = ""
         
-    # 载入模型
-    def load_model(self, scale_path="scale_online.pickle.dat",xgb_path="xgb_online.pickle.dat"):
-        self.scaler = pickle.load(open(scale_path, "rb"))
-        self.model = pickle.load(open(xgb_path, "rb"))
+   # 载入模型
+    def load_model(self, scale_path="scale_online.pickle.dat",xgb_path="xgb_online.json"):
+        self.scaler = pickle.load(scale_path, "rb"))
+        self.model = xgboost.Booster()
+        self.model.load_model(xgb_path)
     
     # 存储模型
     def save_model(self, version='test'):
