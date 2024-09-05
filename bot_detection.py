@@ -138,7 +138,7 @@ if st.button('🚀识别'):
             #st.write(uid)
         
             if pd.notna(uid):
-                user_data = check_account((st.session_state.uid).strip())
+                user_data = check_account(str(uid))
                 show_info(user_data)
             else:
                 st.error('未查找到该用户，请检查昵称输入或使用用户UID进行查找！', icon="🚨")
@@ -147,7 +147,7 @@ if st.button('🚀识别'):
         if (st.session_state.uid).strip() == "":
             st.error('用户UID不能为空！', icon="🚨")
         else:
-            user_data = check_account(str(uid))
+            user_data = check_account((st.session_state.uid).strip())
             show_info(user_data)
     elif select == '批量用户ID':
         if uploaded_file is not None:
