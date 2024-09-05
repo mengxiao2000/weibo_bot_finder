@@ -30,26 +30,26 @@ class BotModel():
     def save_model(self, version='test'):
         pickle.dump(self.model, open("xgb_online"+version+".pickle.dat", "wb"))
         pickle.dump(self.scaler, open("scale_online"+version+".pickle.dat", "wb"))
-
-    # 训练模型
-    def train(self, model_data):
-        # 归一化
-        self.scaler = StandardScaler()
-        columns = model_data.columns
-        model_data = scaler.fit_transform(model_data)
+    
+    # 训练模型(未完善2024-09-05)
+    # def train(self, model_data):
+    #     # 归一化
+    #     self.scaler = StandardScaler()
+    #     columns = model_data.columns
+    #     model_data = scaler.fit_transform(model_data)
         
-        # 训练模型
-        X_train, X_test, y_train, y_test = train_test_split(model_data, y, test_size=0.2, random_state=100)
-        self.xgb = xgboost.XGBClassifier(learning_rate=0.1,n_estimators=200,max_depth=3,min_child_weight=0.7).fit(X_train, y_train)
-        #learning_rate=0.1,n_estimators=1000,max_depth=5,min_child_weight=1,
-        y_pred = xgb.predict(X_test)
+    #     # 训练模型
+    #     X_train, X_test, y_train, y_test = train_test_split(model_data, y, test_size=0.2, random_state=100)
+    #     self.xgb = xgboost.XGBClassifier(learning_rate=0.1,n_estimators=200,max_depth=3,min_child_weight=0.7).fit(X_train, y_train)
+    #     #learning_rate=0.1,n_estimators=1000,max_depth=5,min_child_weight=1,
+    #     y_pred = xgb.predict(X_test)
         
-        # 输出精度
-        acc_xgb = accuracy_score(y_test, y_pred)*100
-        recall_xgb = recall_score(y_test, y_pred)*100
-        f1_xgb = f1_score(y_test, y_pred)*100
-        precision_xgb = precision_score(y_test, y_pred)*100
-        print(acc_xgb, recall_xgb, precision_xgb, f1_xgb)
+    #     # 输出精度
+    #     acc_xgb = accuracy_score(y_test, y_pred)*100
+    #     recall_xgb = recall_score(y_test, y_pred)*100
+    #     f1_xgb = f1_score(y_test, y_pred)*100
+    #     precision_xgb = precision_score(y_test, y_pred)*100
+    #     print(acc_xgb, recall_xgb, precision_xgb, f1_xgb)
 
 
     
@@ -57,9 +57,12 @@ class BotModel():
     def predict(self, user_data):
         try:
             user_input  = user_data[['verified','urank','mbrank','statuses_count','follow_count','followers_count','gender', 'description','followers_follow','origin_rate','like_num','forward_num','comment_num','post_freq', 'post_location','statuses_follow', 'content_length','content_std', 'name_digit','name_length','richness', 'hashtag', 'at']]
-            user_input = self.scaler.transform(user_input)
+            
+            user_input = self.scaler.transform(user_input.values)
+            user_input = xgboost.DMatrix(user_input)
             user_data['bot'] = self.model.predict(user_input)
             user_data['bot_prob'] = self.model.predict(user_input,output_margin=True)
+            
             #st.write('sssss')
             
             #self.update(int(float(user_data['uid'].values[0])), user_data['bot_prob'].values[0], user_data['bot'].values[0])
