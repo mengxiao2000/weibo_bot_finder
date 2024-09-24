@@ -122,7 +122,6 @@ def show_info(user_data):
     #st.markdown('😭识别结果不满意？[点击评论](https://docs.qq.com/sheet/DYXJNRGZzWnlJdmJk)，提出建议，帮助我们改进！')
 
 # 缓存识别结果
-@st.cache_data
 def check_account(uid):
     user_data = crawl_info.crawl_info(str(int(uid)).strip())
     user_data = model.predict(user_data)
