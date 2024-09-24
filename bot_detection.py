@@ -116,7 +116,7 @@ def show_info(user_data):
     
     # 显示预测结果
     result_col1, result_col2 = st.columns(2)
-    
+    st.write(user_data)
     result_col1.metric("是否是机器人", ['否','是'][int(user_data['bot'].values[0])])
     result_col2.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。",)
     #st.markdown('😭识别结果不满意？[点击评论](https://docs.qq.com/sheet/DYXJNRGZzWnlJdmJk)，提出建议，帮助我们改进！')
