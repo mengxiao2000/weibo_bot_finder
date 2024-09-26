@@ -112,20 +112,19 @@ def get_user_info(uid=6374435213):
 
         headers={
             # 'cookie':'SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwzb0tdY-Q6IgsH6pezwk4SQ3v0QTZ6cb0ATVoRhQhymPw.; SUB=_2A25L9kAmDeRhGeBN7FYV8yvOyj-IHXVoit3urDV6PUJbktANLUnFkW1NRC0emln0pDeQmtc-DSVfixWsarpzziVA; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5KMhUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; SSOLoginState=1727148150; ALF=1729740150',
-            'sec-ch-ua': '"Google Chrome";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"macOS"',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'same-origin',
-            'upgrade-insecure-requests': '1',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
+            #'sec-ch-ua': '"Google Chrome";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
+            #'sec-ch-ua-mobile': '?0',
+            #'sec-ch-ua-platform': '"macOS"',
+            #'sec-fetch-dest': 'empty',
+            #'sec-fetch-mode': 'navigate',
+            #'sec-fetch-site': 'same-origin',
+            #'upgrade-insecure-requests': '1',
+            #'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
         }
 
         res = requests.get(url, timeout=1, headers=headers).text
         info = json.loads(res)
- 
-        uid = uid
+
         screen_name = info['data']['userInfo']['screen_name']
 
         verified = info['data']['userInfo']['verified']
@@ -144,7 +143,10 @@ def get_user_info(uid=6374435213):
         profile_image_url = info['data']['userInfo']['profile_image_url']
 
         df_ = pd.DataFrame([[uid, screen_name, verified, verified_type, urank, mbrank, statuses_count, follow_count, followers_count, gender, description, profile_image_url]], columns = ['uid', 'screen_name', 'verified', 'verified_type', 'urank', 'mbrank', 'statuses_count', 'follow_count', 'followers_count', 'gender', 'description', 'profile_image_url'])
-        
+
+        # test output
+        st.write(df_)
+        print(df_)
     except Exception as e:
 
         df_ = pd.DataFrame([[np.NAN for i in range(12)]], columns = ['uid', 'screen_name', 'verified', 'verified_type', 'urank', 'mbrank', 'statuses_count', 'follow_count', 'followers_count', 'gender', 'description', 'profile_image_url'])
@@ -279,7 +281,6 @@ def crawl_info(uid):
         df_uid['uid'] = int(uid)
         
         user_info = pd.read_csv('user_info.csv')
-        st.write(user_info)
         data = user_attr(user_info)
         
         #合并微博发布特征与用户属性特征
