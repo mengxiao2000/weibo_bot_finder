@@ -111,7 +111,7 @@ def get_user_info(uid=6374435213):
         url = 'https://m.weibo.cn/api/container/getIndex?&containerid=100505' + str(uid) #6374435213
 
         headers={
-            'cookie':'SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwzb0tdY-Q6IgsH6pezwk4SQ3v0QTZ6cb0ATVoRhQhymPw.; SUB=_2A25L9kAmDeRhGeBN7FYV8yvOyj-IHXVoit3urDV6PUJbktANLUnFkW1NRC0emln0pDeQmtc-DSVfixWsarpzziVA; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5KMhUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; SSOLoginState=1727148150; ALF=1729740150',
+            # 'cookie':'SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwzb0tdY-Q6IgsH6pezwk4SQ3v0QTZ6cb0ATVoRhQhymPw.; SUB=_2A25L9kAmDeRhGeBN7FYV8yvOyj-IHXVoit3urDV6PUJbktANLUnFkW1NRC0emln0pDeQmtc-DSVfixWsarpzziVA; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5KMhUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; SSOLoginState=1727148150; ALF=1729740150',
             'sec-ch-ua': '"Google Chrome";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
             'sec-ch-ua-mobile': '?0',
             'sec-ch-ua-platform': '"macOS"',
@@ -279,7 +279,7 @@ def crawl_info(uid):
         df_uid['uid'] = int(uid)
         
         user_info = pd.read_csv('user_info.csv')
-        
+        st.write(user_info)
         data = user_attr(user_info)
         
         #合并微博发布特征与用户属性特征
