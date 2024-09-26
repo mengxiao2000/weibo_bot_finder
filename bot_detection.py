@@ -97,7 +97,7 @@ elif select == '批量用户ID':
 # 显示信息
 def show_info(user_data):
     info_col1, info_col2 = st.columns(2)
-    st.write(user_data)
+    
     try:
         # 显示头像
         res = requests.get(user_data['profile_image_url'].values[0])
