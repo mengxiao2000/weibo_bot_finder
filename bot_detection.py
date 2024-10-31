@@ -71,7 +71,7 @@ select = col2_search.radio(
     ('用户ID', '批量用户ID'),index=0, horizontal=True, label_visibility="collapsed")
 
 if select == '用户ID':
-    st.text_input("请输入用户ID (例如:6374435213或https://weibo.com/u/6374435213 )：", key="uid")
+    detect_user_id = st.text_input("请输入用户ID (例如:6374435213或https://weibo.com/u/6374435213 )：")
 elif select == '批量用户ID':
     uploaded_file = st.file_uploader("请上传包含'uid'列的CSV文件：")
     test_df = pd.read_csv('test_upload.csv').to_csv(index=False).encode("utf-8")
@@ -133,7 +133,7 @@ if st.button('🚀识别'):
         if (st.session_state.user_name).strip() == "":
             st.error('用户昵称不能为空！', icon="🚨")
         else:
-            uid = crawl_info.get_uid(st.session_state.user_name)
+            uid = crawl_info.get_uid(detect_user_id)
             #st.write(uid)
         
             if pd.notna(uid):
