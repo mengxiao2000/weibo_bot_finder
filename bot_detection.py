@@ -32,21 +32,7 @@ st.markdown(' <center> 微博社交机器人探测器 🛸 </center>', unsafe_al
 ####################
 #显示已经识别的机器人数量
 ####################
-def get_bot_num():
-    try:
-        mysql = pymysql.connect(host=st.secrets["db_host"], port=st.secrets["port"], user=st.secrets["db_username"], passwd=st.secrets["db_password"], database="Bot_check")
 
-        cursor = mysql.cursor()
-        cursor.execute(f"SELECT COUNT(*) AS nums FROM Bot WHERE bot=1")
-        res = cursor.fetchall()
-        mysql.commit()
-        
-        st.markdown(f' <center> 已经累计发现{res[0][0]}个疑似机器人账号 </center>', unsafe_allow_html=True)
-    except Exception as e:
-        st.write(e)
-        pass
-    
-#get_bot_num()
 
 st.write("\n  ")
 st.write("\n  ")
@@ -130,7 +116,7 @@ def check_account(uid):
 # 识别过程
 if st.button('🚀识别'):
     if select == '用户ID':
-        if (st.session_state.uid).strip() == "":
+        if detect_user_id.strip() == "":
             st.error('用户UID不能为空！', icon="🚨")
         else:
             user_data = check_account(str(detect_user_id).strip())
