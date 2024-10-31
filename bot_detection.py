@@ -178,8 +178,9 @@ with tab2:
     st.markdown('获取详情信息，请联系mengxiaocntc@163.com')
     
 with tab3:
-    st.markdown('## 🍀 2024-09-05')
+    st.markdown('## 🍀 2024-10-31')
     st.markdown('1. Bug修复: 输入id和识别id不一致')
+    st.markdown('2. 简化功能')
     
     st.markdown('## 🍀 2024-09-05')
     st.markdown('1. Bug修复: 依赖更新')
