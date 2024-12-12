@@ -119,6 +119,8 @@ if st.button('🚀识别'):
         if detect_user_id.strip() == "":
             st.error('用户UID不能为空！', icon="🚨")
         else:
+            if 'https://weibo.com/u/' in str(detect_user_id):
+                detect_user_id = str(detect_user_id).strip().strip('https://weibo.com/u/')
             user_data = check_account(str(detect_user_id).strip())
             show_info(user_data)
     elif select == '批量用户ID':
