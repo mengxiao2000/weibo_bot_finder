@@ -96,7 +96,7 @@ def check_account(uid):
         user_data = crawl_info.crawl_info(str(int(uid)).strip())
         #st.write(user_data)
         pred_user_data = bot_model.predict(user_data)
-        #st.write(pred_user_data)
+        st.write(pred_user_data[['screen_name','bot_prob']])
         return pred_user_data
     except Exception as e:
         st.error(f"数据抓取或预测失败: {str(e)}", icon="🚨")
