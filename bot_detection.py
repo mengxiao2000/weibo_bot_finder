@@ -109,14 +109,16 @@ if st.button('🚀识别'):
         if detect_user_id.strip() == "":
             st.error('用户UID不能为空！', icon="🚨")
         else:
-            if 'https://weibo.com/u/' in str(detect_user_id):
-                detect_user_id = str(detect_user_id).strip().strip('https://weibo.com/u/')
-                try:
-                    pred_user_data = check_account(str(detect_user_id).strip())
-                    show_info(pred_user_data)
-                except Exception as e:
-                    st.error(f"识别失败: {str(e)}", icon="🚨")
-                    
+            
+            try:
+                if 'https://weibo.com/u/' in str(detect_user_id):
+                    detect_user_id = str(detect_user_id).strip().strip('https://weibo.com/u/')
+                pred_user_data = check_account(str(detect_user_id).strip())
+                show_info(pred_user_data)
+            except Exception as e:
+                st.error(f"识别失败: {str(e)}", icon="🚨")
+            
+                
                     
     elif select == '批量用户ID':
         if uploaded_file is not None:
