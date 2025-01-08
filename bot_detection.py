@@ -129,10 +129,12 @@ if st.button('🚀识别'):
                     uid_df = uid_df.reset_index()
                     for idx, line in uid_df.iterrows():
                         try:
-                            user_data = check_account(line['uid'])
-                            if pred_user_data:
-                                uid_df.loc[idx, 'bot'] = pred_user_data['bot'].values[0]
-                                uid_df.loc[idx, 'bot_score'] = pred_user_data['bot_prob'].values[0]
+                            detect_user_id = str(line['uid'])
+                            if 'https://weibo.com/u/' in detect_user_id:
+                                detect_user_id = str(detect_user_id).strip().strip('https://weibo.com/u/')
+                            pred_user_data = check_account(detect_user_id)
+                            uid_df.loc[idx, 'bot'] = pred_user_data['bot'].values[0]
+                            uid_df.loc[idx, 'bot_score'] = pred_user_data['bot_prob'].values[0]
                         except Exception as e:
                             uid_df.loc[idx, 'bot'] = np.NAN
                             uid_df.loc[idx, 'bot_score'] = np.NAN
