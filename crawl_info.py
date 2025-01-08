@@ -110,7 +110,8 @@ def get_user_weibo(uid=6374435213, proxies=None):
                      columns=['created_at','mid','reposts_count','comments_count','attitudes_count','isLongText','region_name',
                               'text', 'retweeted_text', 'location'])
         all_line = pd.concat([all_line, line])
-    st.write(all_line)
+    
+    
     all_line.to_csv(str(uid)+'.csv')
     
 
@@ -156,8 +157,8 @@ def get_user_info(uid=6374435213):
 
         df_ = pd.DataFrame([[uid, screen_name, verified, verified_type, urank, mbrank, statuses_count, follow_count, followers_count, gender, description, profile_image_url]], columns = ['uid', 'screen_name', 'verified', 'verified_type', 'urank', 'mbrank', 'statuses_count', 'follow_count', 'followers_count', 'gender', 'description', 'profile_image_url'])
         
-        st.write(df_)
-        print(df_)
+        #st.write(df_)
+        #print(df_)
     except Exception as e:
 
         df_ = pd.DataFrame([[np.NAN for i in range(12)]], columns = ['uid', 'screen_name', 'verified', 'verified_type', 'urank', 'mbrank', 'statuses_count', 'follow_count', 'followers_count', 'gender', 'description', 'profile_image_url'])
