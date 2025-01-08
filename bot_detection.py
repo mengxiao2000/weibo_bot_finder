@@ -14,7 +14,6 @@ import login
 from PIL import Image
 import requests
 import time
-from sqlite3 import Cursor
 import pymysql
 
 # st.set_page_config(
@@ -27,12 +26,9 @@ import pymysql
 st.markdown('# <center> 🤖️ Bot Finder</center>', unsafe_allow_html=True)
 st.markdown(' <center> 微博社交机器人探测器 🛸 </center>', unsafe_allow_html=True)
 
-
-
 ####################
-#显示已经识别的机器人数量
+# 显示已经识别的机器人数量
 ####################
-
 
 st.write("\n  ")
 st.write("\n  ")
@@ -43,8 +39,8 @@ st.write("\n  ")
 # 预测模型加载
 ############
 
-model = model.BotModel()
-model.load_model()
+bot_model = model.BotModel()  # 重命名为 bot_model，避免与 module 冲突
+bot_model.load_model()
 
 ###########
 # 信息输入
@@ -54,26 +50,19 @@ col1_search, col2_search = st.columns(2)
 col1_search.markdown('🔍微博用户查找选项：')
 select = col2_search.radio(
     "",
-    ('用户ID', '批量用户ID'),index=0, horizontal=True, label_visibility="collapsed")
+    ('用户ID', '批量用户ID'), index=0, horizontal=True, label_visibility="collapsed")
 
 if select == '用户ID':
     detect_user_id = st.text_input("请输入用户ID (例如:6374435213或https://weibo.com/u/6374435213 )：")
 elif select == '批量用户ID':
     uploaded_file = st.file_uploader("请上传包含'uid'列的CSV文件：")
-    test_df = pd.read_csv('test_upload.csv').to_csv(index=False).encode("utf-8")
-    st.download_button(
-        label="下载示例文件",
-        data=test_df,
-        file_name='test_bot.csv',
-        mime='text/csv',
-    )
-    
     if uploaded_file is not None:
         uid_df = pd.read_csv(uploaded_file)
         st.write('表格预览：')
         st.write(uid_df.head(100))
-    
-    
+    else:
+        st.warning('请上传包含用户ID的CSV文件！')
+
 ###########
 # 识别结果
 ###########
@@ -81,37 +70,35 @@ elif select == '批量用户ID':
 # 显示信息
 def show_info(user_data):
     info_col1, info_col2 = st.columns(2)
-    
+
     try:
         # 显示头像
         res = requests.get(user_data['profile_image_url'].values[0])
-        with open("profile_image.png","wb") as f:
-            f.write(res.content)
-        image = Image.open("profile_image.png")
+        image = Image.open(requests.get(user_data['profile_image_url'].values[0], stream=True).raw)
         info_col1.image(image, caption='')
         # 显示昵称
         info_col2.metric("用户昵称", user_data['screen_name'].values[0])
-        
     except:
-        info_col1.markdown('获取用户信息失败，以下为根据用户内容的预测结果。')
-        info_col2.metric("用户uid", user_data['uid'].values[0])
-        pass
- 
-    
+        info_col1.image("default_image.png", caption="用户头像")  # 使用默认图片
+        info_col2.metric("用户ID", user_data['uid'].values[0])
+
     # 显示预测结果
     result_col1, result_col2 = st.columns(2)
-    
+
     bot_label = 1 if user_data['bot_prob'].values[0] > 0 else 0
-    
+
     result_col1.metric("是否是机器人", ['No', 'Yes'][bot_label])
-    result_col2.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。",)
-    #st.markdown('😭识别结果不满意？[点击评论](https://docs.qq.com/sheet/DYXJNRGZzWnlJdmJk)，提出建议，帮助我们改进！')
+    result_col2.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。")
 
 # 缓存识别结果
 def check_account(uid):
-    user_data = crawl_info.crawl_info(str(int(uid)).strip())
-    user_data = model.predict(user_data)
-    return user_data
+    try:
+        user_data = crawl_info.crawl_info(str(int(uid)).strip())
+        user_data = bot_model.predict(user_data)
+        return user_data
+    except Exception as e:
+        st.error(f"数据抓取或预测失败: {str(e)}", icon="🚨")
+        return None
     
 # 识别过程
 if st.button('🚀识别'):
@@ -122,29 +109,27 @@ if st.button('🚀识别'):
             if 'https://weibo.com/u/' in str(detect_user_id):
                 detect_user_id = str(detect_user_id).strip().strip('https://weibo.com/u/')
             user_data = check_account(str(detect_user_id).strip())
-            show_info(user_data)
+            if user_data:
+                show_info(user_data)
     elif select == '批量用户ID':
         if uploaded_file is not None:
-            if 'uid' in uid_df.columns: 
+            if 'uid' in uid_df.columns:
                 with st.spinner('正在执行 🚶 🚴 🛵 🚗 🏎️ 🚄 ...'):
                     my_bar = st.progress(0)
                     length = len(uid_df)
                     uid_df = uid_df.reset_index()
                     for idx, line in uid_df.iterrows():
                         try:
-                            
                             user_data = check_account(line['uid'])
-                            
-                            uid_df.loc[idx,'bot'] = user_data['bot'].values[0]
-                            uid_df.loc[idx,'bot_score'] = user_data['bot_prob'].values[0]
+                            if user_data:
+                                uid_df.loc[idx, 'bot'] = user_data['bot'].values[0]
+                                uid_df.loc[idx, 'bot_score'] = user_data['bot_prob'].values[0]
                         except Exception as e:
-                            #st.write(e)
-                            uid_df.loc[idx,'bot'] = np.NAN
-                            uid_df.loc[idx,'bot_score'] = np.NAN
-                        my_bar.progress((idx+1)/length)
-                        #time.sleep(0.5)
+                            uid_df.loc[idx, 'bot'] = np.NAN
+                            uid_df.loc[idx, 'bot_score'] = np.NAN
+                        my_bar.progress((idx + 1) / length)
 
-                    uid_csv = uid_df.to_csv(index=False).encode('utf-8') 
+                    uid_csv = uid_df.to_csv(index=False).encode('utf-8')
                     st.write('识别完毕！')
                     st.download_button(
                         label="⏬ Download data as CSV",
@@ -152,15 +137,11 @@ if st.button('🚀识别'):
                         file_name='result_bot.csv',
                         mime='text/csv',
                     )
-            else: 
+            else:
                 st.error('检测到CSV表格不包含‘uid’列，请重新上传！', icon="🚨")
-            
-                
         else:
             st.error('请上传用户ID的CSV表格！', icon="🚨")
 
-            
-            
 ###########
 # 其他信息
 ###########
@@ -218,8 +199,3 @@ with tab3:
     st.markdown('2. 更新了网页的基本信息。')
     st.markdown('3. 添加昵称查找和UID查找两种查找方式。')
     st.markdown('4. 目前仍然存在因cookie过期而无法长期使用的问题。')
-    
-
-
-
-
