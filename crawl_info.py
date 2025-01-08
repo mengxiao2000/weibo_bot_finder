@@ -144,10 +144,9 @@ def get_user_info(uid=6374435213):
         profile_image_url = info['data']['userInfo']['profile_image_url']
 
         df_ = pd.DataFrame([[uid, screen_name, verified, verified_type, urank, mbrank, statuses_count, follow_count, followers_count, gender, description, profile_image_url]], columns = ['uid', 'screen_name', 'verified', 'verified_type', 'urank', 'mbrank', 'statuses_count', 'follow_count', 'followers_count', 'gender', 'description', 'profile_image_url'])
-
-        # test output
-        # st.write(df_)
-        # print(df_)
+        
+        st.write(df_)
+        print(df_)
     except Exception as e:
 
         df_ = pd.DataFrame([[np.NAN for i in range(12)]], columns = ['uid', 'screen_name', 'verified', 'verified_type', 'urank', 'mbrank', 'statuses_count', 'follow_count', 'followers_count', 'gender', 'description', 'profile_image_url'])
@@ -271,8 +270,7 @@ def user_attr(data):
 def crawl_info(uid):
     try:
         #抓取信息
-        uid = str(uid)
-        uid = uid.strip('https://weibo.com/u/')
+        uid = str(uid).strip('https://weibo.com/u/')
         get_user_info(uid)
         get_user_weibo(uid)
         #分析内容
