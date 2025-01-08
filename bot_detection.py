@@ -83,12 +83,13 @@ def show_info(user_data):
         info_col2.metric("用户ID", user_data['uid'].values[0])
 
     # 显示预测结果
-    result_col1, result_col2 = st.columns(2)
+    st.write(user_data['bot_prob'])
+    #result_col1, result_col2 = st.columns(2)
 
-    bot_label = 1 if user_data['bot_prob'].values[0] > 0 else 0
+    #bot_label = 1 if user_data['bot_prob'].values[0] > 0 else 0
 
-    result_col1.metric("是否是机器人", ['No', 'Yes'][bot_label])
-    result_col2.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。")
+    #result_col1.metric("是否是机器人", ['No', 'Yes'][bot_label])
+    #result_col2.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。")
 
 # 缓存识别结果
 def check_account(uid):
