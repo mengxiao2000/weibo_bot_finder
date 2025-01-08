@@ -94,6 +94,7 @@ def show_info(user_data):
 def check_account(uid):
     try:
         user_data = crawl_info.crawl_info(str(int(uid)).strip())
+        st.write(user_data)
         user_data = bot_model.predict(user_data)
         return user_data
     except Exception as e:
