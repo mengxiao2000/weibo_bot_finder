@@ -115,7 +115,7 @@ if st.button('🚀识别'):
                     show_info(pred_user_data)
                 except Exception as e:
                     st.error(f"识别失败: {str(e)}", icon="🚨")
-                    return None
+                    
                     
     elif select == '批量用户ID':
         if uploaded_file is not None:
