@@ -157,7 +157,7 @@ def get_user_info(uid=6374435213):
 
         df_ = pd.DataFrame([[uid, screen_name, verified, verified_type, urank, mbrank, statuses_count, follow_count, followers_count, gender, description, profile_image_url]], columns = ['uid', 'screen_name', 'verified', 'verified_type', 'urank', 'mbrank', 'statuses_count', 'follow_count', 'followers_count', 'gender', 'description', 'profile_image_url'])
         
-        st.write(df_)
+        #st.write(df_)
         #print(df_)
     except Exception as e:
 
@@ -165,8 +165,8 @@ def get_user_info(uid=6374435213):
         df_['uid'] = uid
 
     df_.to_csv('user_info.csv',mode='w', index=None)
-    st.write(df_)
-    print(df_)
+    #st.write(df_)
+    #print(df_)
 
 # 分析微博内容
 def wan_transfer(text):
