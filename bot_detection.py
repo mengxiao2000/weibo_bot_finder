@@ -79,7 +79,7 @@ def show_info(user_data):
         # 显示昵称
         info_col2.metric("用户昵称", user_data['screen_name'].values[0])
     except:
-        info_col1.image("default_image.png", caption="用户头像")  # 使用默认图片
+        # info_col1.image("default_image.png", caption="用户头像")  # 使用默认图片
         info_col2.metric("用户ID", user_data['uid'].values[0])
 
     # 显示预测结果
@@ -95,7 +95,7 @@ def show_info(user_data):
 def check_account(uid):
     try:
         user_data = crawl_info.crawl_info(str(int(uid)).strip())
-        #st.write(user_data)
+        print(user_data)
         pred_user_data = bot_model.predict(user_data)
         #st.write(pred_user_data[['screen_name','bot_prob']])
         return pred_user_data
