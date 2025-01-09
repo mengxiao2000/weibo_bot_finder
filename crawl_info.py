@@ -45,7 +45,7 @@ def get_long_weibo(long_id):
         return np.NAN
 
 #获取用户微博
-def get_user_weibo(uid=6374435213, cookie, proxies=None,):
+def get_user_weibo(uid, cookie, proxies=None,):
     headers={
             'cookie': cookie,
             
@@ -115,7 +115,7 @@ def get_user_weibo(uid=6374435213, cookie, proxies=None,):
     all_line.to_csv(str(uid)+'.csv')
     
 
-def get_user_info(uid=6374435213, cookie):
+def get_user_info(uid, cookie):
 
     #url = 'https://m.weibo.cn/api/container/getIndex?mod=pedit_more%3Fmod%3Dpedit_more&jumpfrom=weibocom&containerid=100505' + str(uid) #6374435213
     #https://m.weibo.cn/api/container/getIndex?&containerid=1005056308541867
