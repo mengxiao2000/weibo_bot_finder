@@ -45,9 +45,9 @@ def get_long_weibo(long_id):
         return np.NAN
 
 #获取用户微博
-def get_user_weibo(uid=6374435213, proxies=None):
+def get_user_weibo(uid=6374435213, cookie, proxies=None,):
     headers={
-            'cookie':'SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5NHD95Qce0MXShefeo20Ws4Dqcj6i--ciK.Ni-24i--Ri-zfi-zNi--ciK.Ni-24i--NiKL2i-2pi--fiKyFi-2Xi--4iK.Xi-iFi--NiKnEi-ih; SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwz_788oW7RSQ3cCCn1eb3DpJhiRejag75aIFO4kM03Awo.; SUB=_2A25Kei1mDeRhGeBN7FYV8yvOyj-IHXVp9iCurDV6PUJbktANLXD7kW1NRC0emiLoKCPXiqCxBeBYxrdY86czMek5; SSOLoginState=1736334646; ALF=1738926646; _T_WM=49329126911; WEIBOCN_FROM=1110003030; MLOGIN=1; M_WEIBOCN_PARAMS=oid%3D5119181282083552%26luicode%3D20000174%26uicode%3D20000174; XSRF-TOKEN=6c0fea',
+            'cookie': cookie,
             
             #'sec-ch-ua': '"Google Chrome";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
             #'sec-ch-ua-mobile': '?0',
@@ -115,7 +115,7 @@ def get_user_weibo(uid=6374435213, proxies=None):
     all_line.to_csv(str(uid)+'.csv')
     
 
-def get_user_info(uid=6374435213):
+def get_user_info(uid=6374435213, cookie):
 
     #url = 'https://m.weibo.cn/api/container/getIndex?mod=pedit_more%3Fmod%3Dpedit_more&jumpfrom=weibocom&containerid=100505' + str(uid) #6374435213
     #https://m.weibo.cn/api/container/getIndex?&containerid=1005056308541867
@@ -123,7 +123,7 @@ def get_user_info(uid=6374435213):
         url = 'https://m.weibo.cn/api/container/getIndex?&containerid=100505' + str(uid) #6374435213
 
         headers={
-            'cookie':'SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5NHD95Qce0MXShefeo20Ws4Dqcj6i--ciK.Ni-24i--Ri-zfi-zNi--ciK.Ni-24i--NiKL2i-2pi--fiKyFi-2Xi--4iK.Xi-iFi--NiKnEi-ih; SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwz_788oW7RSQ3cCCn1eb3DpJhiRejag75aIFO4kM03Awo.; SUB=_2A25Kei1mDeRhGeBN7FYV8yvOyj-IHXVp9iCurDV6PUJbktANLXD7kW1NRC0emiLoKCPXiqCxBeBYxrdY86czMek5; SSOLoginState=1736334646; ALF=1738926646; _T_WM=49329126911; WEIBOCN_FROM=1110003030; MLOGIN=1; M_WEIBOCN_PARAMS=oid%3D5119181282083552%26luicode%3D20000174%26uicode%3D20000174; XSRF-TOKEN=6c0fea',
+            'cookie': cookie,
             
             #'sec-ch-ua': '"Google Chrome";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
             #'sec-ch-ua-mobile': '?0',
@@ -279,12 +279,16 @@ def user_attr(data):
 ##################
 # 抓取信息并分析内容
 ##################
-def crawl_info(uid):
+def crawl_info(uid, cookie):
     try:
         #抓取信息
         uid = str(uid).strip('https://weibo.com/u/')
-        get_user_info(uid)
-        get_user_weibo(uid)
+        if cookie.strip() == "":
+            cookie = 'SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5NHD95Qce0MXShefeo20Ws4Dqcj6i--ciK.Ni-24i--Ri-zfi-zNi--ciK.Ni-24i--NiKL2i-2pi--fiKyFi-2Xi--4iK.Xi-iFi--NiKnEi-ih; SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwz_788oW7RSQ3cCCn1eb3DpJhiRejag75aIFO4kM03Awo.; SUB=_2A25Kei1mDeRhGeBN7FYV8yvOyj-IHXVp9iCurDV6PUJbktANLXD7kW1NRC0emiLoKCPXiqCxBeBYxrdY86czMek5; SSOLoginState=1736334646; ALF=1738926646; _T_WM=49329126911; WEIBOCN_FROM=1110003030; MLOGIN=1; M_WEIBOCN_PARAMS=oid%3D5119181282083552%26luicode%3D20000174%26uicode%3D20000174; XSRF-TOKEN=6c0fea'
+        
+        get_user_info(uid, cookie)
+        get_user_weibo(uid, cookie)
+        
         #分析内容
         df_uid = cal_origin(str(uid)+'.csv')
         df_uid['uid'] = int(uid)
