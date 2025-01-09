@@ -62,6 +62,7 @@ elif select == '批量用户ID':
         st.write(uid_df.head(100))
     else:
         st.warning('请上传包含用户ID的CSV文件！')
+    cookie = st.text_input("请输入m.weibo.cn的cookie (可选)：")
 
 ###########
 # 识别结果
@@ -92,9 +93,9 @@ def show_info(user_data):
     result_col2.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。")
 
 # 缓存识别结果
-def check_account(uid):
+def check_account(uid, cookie=""):
     try:
-        user_data = crawl_info.crawl_info(str(int(uid)).strip())
+        user_data = crawl_info.crawl_info(str(int(uid)).strip(), cookie)
         #st.write(user_data)
         pred_user_data = bot_model.predict(user_data)
         #st.write(pred_user_data[['screen_name','bot_prob']])
@@ -132,7 +133,9 @@ if st.button('🚀识别'):
                             detect_user_id = str(line['uid'])
                             if 'https://weibo.com/u/' in detect_user_id:
                                 detect_user_id = str(detect_user_id).strip().strip('https://weibo.com/u/')
-                            pred_user_data = check_account(detect_user_id)
+
+                            pred_user_data = check_account(detect_user_id, cookie)
+
                             uid_df.loc[idx, 'bot'] = pred_user_data['bot'].values[0]
                             uid_df.loc[idx, 'bot_score'] = pred_user_data['bot_prob'].values[0]
                         except Exception as e:
