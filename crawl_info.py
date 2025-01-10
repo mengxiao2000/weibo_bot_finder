@@ -284,7 +284,8 @@ def crawl_info(uid, cookie):
         #抓取信息
         uid = str(uid).strip('https://weibo.com/u/')
         if cookie.strip() == "":
-            cookie = 'SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5NHD95Qce0MXShefeo20Ws4Dqcj6i--ciK.Ni-24i--Ri-zfi-zNi--ciK.Ni-24i--NiKL2i-2pi--fiKyFi-2Xi--4iK.Xi-iFi--NiKnEi-ih; SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwz_788oW7RSQ3cCCn1eb3DpJhiRejag75aIFO4kM03Awo.; SUB=_2A25Kei1mDeRhGeBN7FYV8yvOyj-IHXVp9iCurDV6PUJbktANLXD7kW1NRC0emiLoKCPXiqCxBeBYxrdY86czMek5; SSOLoginState=1736334646; ALF=1738926646; _T_WM=49329126911; WEIBOCN_FROM=1110003030; MLOGIN=1; M_WEIBOCN_PARAMS=oid%3D5119181282083552%26luicode%3D20000174%26uicode%3D20000174; XSRF-TOKEN=6c0fea'
+            cookie = 'SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5NHD95Qce0MXShefeo20Ws4Dqcj6i--ciK.Ni-24i--Ri-zfi-zNi--ciK.Ni-24i--NiKL2i-2pi--fiKyFi-2Xi--4iK.Xi-iFi--NiKnEi-ih; SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwz_788oW7RSQ3cCCn1eb3DpJhiRejag75aIFO4kM03Awo.; SUB=_2A25Kei1mDeRhGeBN7FYV8yvOyj-IHXVp9iCurDV6PUJbktANLXD7kW1NRC0emiLoKCPXiqCxBeBYxrdY86czMek5; SSOLoginState=1736334646; ALF=1738926646; WEIBOCN_FROM=1110003030; _T_WM=19930775148; XSRF-TOKEN=332c0a; MLOGIN=1; M_WEIBOCN_PARAMS=luicode%3D20000174%26uicode%3D20000174'
+            
         
         get_user_info(uid, cookie)
         get_user_weibo(uid, cookie)
