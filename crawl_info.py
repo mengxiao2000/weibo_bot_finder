@@ -131,6 +131,8 @@ def get_user_info(uid, cookie):
         }
 
         res = requests.get(url, timeout=1, headers=headers).text
+        st.write(res)
+        
         info = json.loads(res)
 
         screen_name = info['data']['userInfo']['screen_name']
