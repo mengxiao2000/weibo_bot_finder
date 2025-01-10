@@ -49,7 +49,11 @@ def get_user_weibo(uid, cookie, proxies=None,):
     headers={
             'cookie': cookie,
             'accept': 'application/json, text/plain, */*',
-            'accept-encoding': 'gzip, deflate, br, zstd',
+            'accept-language': 'zh-CN,zh;q=0.9',
+            'mweibo-pwa': '1',
+            'priority': 'u=1, i',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
             'referer': 'https://m.weibo.cn/',
             'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
             'x-requested-with': 'XMLHttpRequest',
@@ -123,12 +127,16 @@ def get_user_info(uid, cookie):
         headers={
             'cookie': cookie,
             'accept': 'application/json, text/plain, */*',
-            'accept-encoding': 'gzip, deflate, br, zstd',
+            'accept-language': 'zh-CN,zh;q=0.9',
+            'mweibo-pwa': '1',
+            'priority': 'u=1, i',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
             'referer': 'https://m.weibo.cn/',
             'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
             'x-requested-with': 'XMLHttpRequest',
             'x-xsrf-token': '332c0a',
-        }
+    }
 
         res = requests.get(url, timeout=1, headers=headers).text
         st.write(res)
