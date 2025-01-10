@@ -48,14 +48,9 @@ def get_long_weibo(long_id):
 def get_user_weibo(uid, cookie, proxies=None,):
     headers={
             'cookie': cookie,
-            
-            #'sec-ch-ua': '"Google Chrome";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
-            #'sec-ch-ua-mobile': '?0',
-            #'sec-ch-ua-platform': '"macOS"',
-            #'sec-fetch-dest': 'empty',
-            #'sec-fetch-mode': 'navigate',
-            #'sec-fetch-site': 'same-origin',
-            #'upgrade-insecure-requests': '1',
+            'accept': 'application/json, text/plain, */*',
+            'accept-encoding': 'gzip, deflate, br, zstd',
+            'referer': 'https://m.weibo.cn/',
             'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
     }
     #x = requests.get(f'https://m.weibo.cn/api/container/getIndex?containerid=230413{uid}_-_WEIBO_SECOND_PROFILE_WEIBO&page_type=03&page=1', proxies=proxies, headers=headers).json()
@@ -125,14 +120,9 @@ def get_user_info(uid, cookie):
 
         headers={
             'cookie': cookie,
-            
-            #'sec-ch-ua': '"Google Chrome";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
-            #'sec-ch-ua-mobile': '?0',
-            #'sec-ch-ua-platform': '"macOS"',
-            #'sec-fetch-dest': 'empty',
-            #'sec-fetch-mode': 'navigate',
-            #'sec-fetch-site': 'same-origin',
-            #'upgrade-insecure-requests': '1',
+            'accept': 'application/json, text/plain, */*',
+            'accept-encoding': 'gzip, deflate, br, zstd',
+            'referer': 'https://m.weibo.cn/',
             'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
         }
 
