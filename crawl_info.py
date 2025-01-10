@@ -47,17 +47,17 @@ def get_long_weibo(long_id):
 #获取用户微博
 def get_user_weibo(uid, cookie, proxies=None,):
     headers={
-            'cookie': cookie,
-            'accept': 'application/json, text/plain, */*',
-            'accept-language': 'zh-CN,zh;q=0.9',
-            'mweibo-pwa': '1',
-            'priority': 'u=1, i',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
+            'cookie': '',
+            #'accept': 'application/json, text/plain, */*',
+            #'accept-language': 'zh-CN,zh;q=0.9',
+            #'mweibo-pwa': '1',
+            #'priority': 'u=1, i',
+            #'sec-fetch-dest': 'empty',
+            #'sec-fetch-mode': 'cors',
             'referer': 'https://m.weibo.cn/',
             'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
-            'x-requested-with': 'XMLHttpRequest',
-            'x-xsrf-token': '332c0a',
+            #'x-requested-with': 'XMLHttpRequest',
+            #'x-xsrf-token': '332c0a',
     }
     #x = requests.get(f'https://m.weibo.cn/api/container/getIndex?containerid=230413{uid}_-_WEIBO_SECOND_PROFILE_WEIBO&page_type=03&page=1', proxies=proxies, headers=headers).json()
     x = requests.get(f'https://m.weibo.cn/api/container/getIndex?type=uid&value={uid}&containerid=107603{uid}',proxies=proxies, timeout=2, headers=headers).json()
@@ -126,16 +126,16 @@ def get_user_info(uid, cookie):
 
         headers={
             'cookie': cookie,
-            'accept': 'application/json, text/plain, */*',
-            'accept-language': 'zh-CN,zh;q=0.9',
-            'mweibo-pwa': '1',
-            'priority': 'u=1, i',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
+            #'accept': 'application/json, text/plain, */*',
+            #'accept-language': 'zh-CN,zh;q=0.9',
+            #'mweibo-pwa': '1',
+            #'priority': 'u=1, i',
+            #'sec-fetch-dest': 'empty',
+            #'sec-fetch-mode': 'cors',
             'referer': 'https://m.weibo.cn/',
             'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
-            'x-requested-with': 'XMLHttpRequest',
-            'x-xsrf-token': '332c0a',
+            #'x-requested-with': 'XMLHttpRequest',
+            #'x-xsrf-token': '332c0a',
     }
 
         res = requests.get(url, timeout=1, headers=headers).text
@@ -170,8 +170,8 @@ def get_user_info(uid, cookie):
         df_['uid'] = uid
 
     df_.to_csv('user_info.csv',mode='w', index=None)
-    st.write(df_)
-    print(df_)
+    #st.write(df_)
+    #print(df_)
 
 # 分析微博内容
 def wan_transfer(text):
@@ -289,7 +289,7 @@ def crawl_info(uid, cookie):
         #抓取信息
         uid = str(uid).strip('https://weibo.com/u/')
         if cookie.strip() == "":
-            cookie = 'SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5NHD95Qce0MXShefeo20Ws4Dqcj6i--ciK.Ni-24i--Ri-zfi-zNi--ciK.Ni-24i--NiKL2i-2pi--fiKyFi-2Xi--4iK.Xi-iFi--NiKnEi-ih; SCF=Ar4ZhtzuLmtMYJFXdWZAedifVOMGLRRw7OQIWSdROtwz_788oW7RSQ3cCCn1eb3DpJhiRejag75aIFO4kM03Awo.; SUB=_2A25Kei1mDeRhGeBN7FYV8yvOyj-IHXVp9iCurDV6PUJbktANLXD7kW1NRC0emiLoKCPXiqCxBeBYxrdY86czMek5; SSOLoginState=1736334646; ALF=1738926646; WEIBOCN_FROM=1110003030; _T_WM=19930775148; XSRF-TOKEN=332c0a; MLOGIN=1; M_WEIBOCN_PARAMS=luicode%3D20000174%26uicode%3D20000174'
+            cookie = ''
             
         
         get_user_info(uid, cookie)
