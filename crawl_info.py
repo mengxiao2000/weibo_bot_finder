@@ -39,7 +39,7 @@ def clean_text(text):
 # 获取长推文
 def get_long_weibo(long_id):
     try:
-        long_text = requests.get(f'https://m.weibo.cn/statuses/extend?id={long_id}', timeout=1).json()['data']['longTextContent']
+        long_text = requests.get(f'https://m.weibo.cn/statuses/extend?id={long_id}', timeout=3).json()['data']['longTextContent']
         return long_text
     except Exception as e:
         return np.NAN
@@ -52,9 +52,11 @@ def get_user_weibo(uid, cookie, proxies=None,):
             'accept-encoding': 'gzip, deflate, br, zstd',
             'referer': 'https://m.weibo.cn/',
             'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
+            'x-requested-with': 'XMLHttpRequest',
+            'x-xsrf-token': '332c0a',
     }
     #x = requests.get(f'https://m.weibo.cn/api/container/getIndex?containerid=230413{uid}_-_WEIBO_SECOND_PROFILE_WEIBO&page_type=03&page=1', proxies=proxies, headers=headers).json()
-    x = requests.get(f'https://m.weibo.cn/api/container/getIndex?type=uid&value={uid}&containerid=107603{uid}',proxies=proxies, timeout=1, headers=headers).json()
+    x = requests.get(f'https://m.weibo.cn/api/container/getIndex?type=uid&value={uid}&containerid=107603{uid}',proxies=proxies, timeout=2, headers=headers).json()
     #print(x)
     if x.get('msg',0) ==  '这里还没有内容':
         with open('郑州暴雨-deleted_account.txt',mode='a',encoding='utf-8') as w:
@@ -124,6 +126,8 @@ def get_user_info(uid, cookie):
             'accept-encoding': 'gzip, deflate, br, zstd',
             'referer': 'https://m.weibo.cn/',
             'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
+            'x-requested-with': 'XMLHttpRequest',
+            'x-xsrf-token': '332c0a',
         }
 
         res = requests.get(url, timeout=1, headers=headers).text
