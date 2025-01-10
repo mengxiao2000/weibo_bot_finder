@@ -76,7 +76,7 @@ def get_user_weibo(uid, cookie, proxies=None,):
             for i in range(4):
                 since_id = x['data']['cardlistInfo'].get('since_id',0)
                 #print(since_id)
-                x = requests.get(f'https://m.weibo.cn/api/container/getIndex?type=uid&value={uid}&containerid=107603{uid}&since_id={since_id}',, headers=headers, timeout=1).json()
+                x = requests.get(f'https://m.weibo.cn/api/container/getIndex?type=uid&value={uid}&containerid=107603{uid}&since_id={since_id}', headers=headers, timeout=1).json()
                 x_info = pd.DataFrame(x['data']['cards'])
                 #time.sleep(1)
                 x_ = pd.concat([x_, x_info], axis=0)
