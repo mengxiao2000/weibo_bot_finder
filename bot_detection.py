@@ -136,8 +136,10 @@ if st.button('🚀识别'):
 
                             pred_user_data = check_account(detect_user_id, cookie)
 
-                            uid_df.loc[idx, 'bot'] = pred_user_data['bot'].values[0]
+                            
+                            uid_df.loc[idx, 'bot'] = 1 if pred_user_data['bot_prob'].values[0] > 0 else 0
                             uid_df.loc[idx, 'bot_score'] = pred_user_data['bot_prob'].values[0]
+
                         except Exception as e:
                             uid_df.loc[idx, 'bot'] = np.NAN
                             uid_df.loc[idx, 'bot_score'] = np.NAN
