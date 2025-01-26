@@ -134,11 +134,13 @@ if st.button('🚀识别'):
                             if 'https://weibo.com/u/' in detect_user_id:
                                 detect_user_id = str(detect_user_id).strip().strip('https://weibo.com/u/')
 
+                            
                             url = st.secrets["server_func"]
                             data = {"uid": detect_user_id, "cookie": cookie}
                             response = requests.post(url, json=data).json()
                             uid_df.loc[idx, 'bot'] = response['bot_label']
                             uid_df.loc[idx, 'bot_score'] = response['bot_prob']
+                            time.sleep(2)
                             
                         except Exception as e:
                             uid_df.loc[idx, 'bot'] = np.NAN
