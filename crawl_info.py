@@ -1,10 +1,3 @@
-#########################################
-# 微博社交机器人在线识别
-# Funtion: 用户微博内容、个人身份信息抓取
-# Author: Xiao Meng
-# Email: mengxiaocntc@163.com
-# Update: 2023-03-25
-##########################################
 
 import requests
 import pandas as pd
@@ -13,8 +6,8 @@ from tqdm import tqdm
 import time
 import re
 import json
-import streamlit as st
-from PIL import Image
+# import streamlit as st
+# from PIL import Image
 
 
 # 获取昵称用户对应的UID
@@ -112,9 +105,10 @@ def get_user_weibo(uid, cookie, proxies=None,):
                               'text', 'retweeted_text', 'location'])
         all_line = pd.concat([all_line, line])
 
-    print(all_line)
-    
-    all_line.to_csv(str(uid)+'.csv')
+    #print(all_line)
+
+    return all_line
+
     
 
 def get_user_info(uid, cookie):
@@ -161,7 +155,8 @@ def get_user_info(uid, cookie):
         profile_image_url = info['data']['userInfo']['profile_image_url']
 
         df_ = pd.DataFrame([[uid, screen_name, verified, verified_type, urank, mbrank, statuses_count, follow_count, followers_count, gender, description, profile_image_url]], columns = ['uid', 'screen_name', 'verified', 'verified_type', 'urank', 'mbrank', 'statuses_count', 'follow_count', 'followers_count', 'gender', 'description', 'profile_image_url'])
-        
+
+        return df_
         #st.write(df_)
         #print(df_)
     except Exception as e:
@@ -169,7 +164,8 @@ def get_user_info(uid, cookie):
         df_ = pd.DataFrame([[np.NAN for i in range(12)]], columns = ['uid', 'screen_name', 'verified', 'verified_type', 'urank', 'mbrank', 'statuses_count', 'follow_count', 'followers_count', 'gender', 'description', 'profile_image_url'])
         df_['uid'] = uid
 
-    df_.to_csv('user_info.csv',mode='w', index=None)
+    return df_
+    #df_.to_csv('user_info.csv',mode='w', index=None)
     #st.write(df_)
     #print(df_)
 
@@ -189,9 +185,8 @@ def wan_transfer(text):
     except:
         return np.NAN
 
-def cal_origin(csv_name):
+def cal_origin(csv_):
     try:
-        csv_ = pd.read_csv(csv_name)
         csv_['is_origin'] = csv_['retweeted_text'].apply(lambda x: 1 if pd.isna(x) else 0)
        
         csv_['publish_time'] = pd.to_datetime(csv_['created_at'])
@@ -292,22 +287,21 @@ def crawl_info(uid, cookie):
             cookie = ''
             
         
-        get_user_info(uid, cookie)
-        get_user_weibo(uid, cookie)
+        user_info = get_user_info(uid, cookie)
+        #print(user_info)
+        user_posts = get_user_weibo(uid, cookie)
+        #print(user_posts)
         
         #分析内容
-        df_uid = cal_origin(str(uid)+'.csv')
-        df_uid['uid'] = int(uid)
-        
-        user_info = pd.read_csv('user_info.csv')
+        df_uid = cal_origin(user_posts)
         data = user_attr(user_info)
-        
+
         #合并微博发布特征与用户属性特征
-        user_data = pd.merge(left=data, right=df_uid, on='uid', how='left')
+        user_data = pd.concat([data, df_uid], axis=1)
         
         
         return user_data
+        
     except Exception as e:
-
+        #print(e)
         pass
-
