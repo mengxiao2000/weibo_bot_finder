@@ -62,7 +62,7 @@ elif select == '批量用户ID':
         st.write(uid_df.head(100))
     else:
         st.warning('请上传包含用户ID的CSV文件！')
-    cookie = st.text_input("请输入m.weibo.cn的cookie (可选)：")
+    cookie = st.text_input("请输入m.weibo.cn的cookie (可选)：", help="当访问过频繁时可能会出现数据采集失败，可尝试替换为自己的cookie。")
 
 ###########
 # 识别结果
@@ -140,7 +140,7 @@ if st.button('🚀识别'):
                             response = requests.post(url, json=data).json()
                             uid_df.loc[idx, 'bot'] = response['bot_label']
                             uid_df.loc[idx, 'bot_score'] = response['bot_prob']
-                            time.sleep(2)
+                            time.sleep(3.5)
                             
                         except Exception as e:
                             uid_df.loc[idx, 'bot'] = np.NAN
