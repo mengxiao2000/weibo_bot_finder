@@ -179,7 +179,7 @@ with tab2:
     st.markdown('获取详情信息，请联系mengxiaocntc@163.com')
     
 with tab3:
-    st.markdown('## 🍀 2025-01-26')
+    st.markdown('## 🏹 2025-01-26')
     st.markdown('1. 增强批量识别稳定性')
     st.markdown('2. Bug修复: 单账号识别时返回其他账号的结果')
     
