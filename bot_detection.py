@@ -93,7 +93,7 @@ def show_info(user_data):
     result_col2.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。")
 
 # 缓存识别结果
-def check_account(uid, cookie=""):
+def check_account(uid, cookie="SCF=AqkFILYOfiaoPlTniaZV-Sp0siNi_tm9abXOot6tlmSZc8pPwiDHj_sdPUYcsOE_BxbkemQVf_FF7T86DXiU278.; SUB=_2A25Fz43mDeRhGeBN7FYV8yvOyj-IHXVmpI8urDV6PUJbktANLW_bkW1NRC0emgCot5iD3P0REzh99lo_hCsTdxoO; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5K-hUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; SSOLoginState=1758199222; ALF=1760791222; MLOGIN=1; _T_WM=39292372861; XSRF-TOKEN=47d8db; WEIBOCN_FROM=1110005030; M_WEIBOCN_PARAMS=luicode%3D10000011%26lfid%3D1005056013249944%26fid%3D1076036013249944%26uicode%3D10000011"):
     try:
         user_data = crawl_info.crawl_info(str(int(uid)).strip(), cookie)
         st.write(user_data)
