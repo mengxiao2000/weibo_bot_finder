@@ -40,7 +40,7 @@ def get_long_weibo(long_id):
 #获取用户微博
 def get_user_weibo(uid, cookie, proxies=None,):
     headers={
-            'cookie': '',
+            'cookie': cookie,
             #'accept': 'application/json, text/plain, */*',
             #'accept-language': 'zh-CN,zh;q=0.9',
             #'mweibo-pwa': '1',
@@ -105,7 +105,7 @@ def get_user_weibo(uid, cookie, proxies=None,):
                               'text', 'retweeted_text', 'location'])
         all_line = pd.concat([all_line, line])
 
-    #print(all_line)
+    print(all_line)
 
     return all_line
 
@@ -157,7 +157,7 @@ def get_user_info(uid, cookie):
         df_ = pd.DataFrame([[uid, screen_name, verified, verified_type, urank, mbrank, statuses_count, follow_count, followers_count, gender, description, profile_image_url]], columns = ['uid', 'screen_name', 'verified', 'verified_type', 'urank', 'mbrank', 'statuses_count', 'follow_count', 'followers_count', 'gender', 'description', 'profile_image_url'])
 
         return df_
-        #st.write(df_)
+        st.write(df_)
         #print(df_)
     except Exception as e:
 
