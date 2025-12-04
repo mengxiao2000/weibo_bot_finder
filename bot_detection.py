@@ -1,264 +1,223 @@
-import requests
+#####################
+# 微博社交机器人在线识别
+# Author: Xiao Meng
+# Email: mengxiaocntc@163.com
+# Update: 2023-03-05
+#####################
+
+import streamlit as st
+import crawl_info
+import model
 import pandas as pd
 import numpy as np
-import re
-import json
+import login
+from PIL import Image
+import requests
 import time
+import pymysql
 
-def get_uid(nickname):
+# st.set_page_config(
+#     page_title="Bot Finder",
+#     page_icon="🤖️",
+#     initial_sidebar_state="collapsed",
+# #     layout="wide",
+# )
+
+st.markdown('# <center> 🤖️ Bot Finder</center>', unsafe_allow_html=True)
+st.markdown(' <center> 微博社交机器人探测器 🛸 </center>', unsafe_allow_html=True)
+
+####################
+# 显示已经识别的机器人数量
+####################
+
+st.write("\n  ")
+st.write("\n  ")
+st.write("\n  ")
+st.write("\n  ")
+
+############
+# 预测模型加载
+############
+
+bot_model = model.BotModel()  # 重命名为 bot_model，避免与 module 冲突
+bot_model.load_model()
+
+###########
+# 信息输入
+###########
+
+col1_search, col2_search = st.columns(2)
+col1_search.markdown('🔍微博用户查找选项：')
+select = col2_search.radio(
+    "",
+    ('用户ID', '批量用户ID'), index=0, horizontal=True, label_visibility="collapsed")
+
+if select == '用户ID':
+    detect_user_id = st.text_input("请输入用户ID (例如:6374435213或https://weibo.com/u/6374435213 )：")
+elif select == '批量用户ID':
+    uploaded_file = st.file_uploader("请上传包含'uid'列的CSV文件：")
+    if uploaded_file is not None:
+        uid_df = pd.read_csv(uploaded_file)
+        st.write('表格预览：')
+        st.write(uid_df.head(100))
+    else:
+        st.warning('请上传包含用户ID的CSV文件！')
+    cookie = st.text_input("请输入m.weibo.cn的cookie (可选)：", help="当访问过频繁时可能会出现数据采集失败，可尝试替换为自己的cookie。")
+
+###########
+# 识别结果
+###########
+
+# 显示信息
+def show_info(user_data):
+    info_col1, info_col2 = st.columns(2)
+
     try:
-        url = f"https://m.weibo.cn/api/container/getIndex?containerid=100103type%3D1%26q%3D{nickname}&page_type=searchall"
-        res = requests.get(url, timeout=2).json()
-        cards = res.get("data", {}).get("cards", [])
-        if not cards:
-            return np.NAN
-        
-        group = cards[0].get("card_group", [])
-        if not group:
-            return np.NAN
-
-        try:
-            return group[0]["user"]["id"]
-        except:
-            return group[0]["users"][0]["id"]
-    except Exception as e:
-        print("get_uid error:", e)
-        return np.NAN
-
-
-def clean_text(text):
-    pattern = re.compile(r'<[^>]+>', re.S)
-    result = pattern.sub(' ', str(text))
-    return result
-
-
-def get_long_weibo(long_id):
-    try:
-        url = f'https://m.weibo.cn/statuses/extend?id={long_id}'
-        res = requests.get(url, timeout=3).json()
-        return res.get("data", {}).get("longTextContent", np.NAN)
+        # 显示头像
+        res = requests.get(user_data['profile_image_url'].values[0])
+        image = Image.open(requests.get(user_data['profile_image_url'].values[0], stream=True).raw)
+        info_col1.image(image, caption='')
+        # 显示昵称
+        info_col2.metric("用户昵称", user_data['screen_name'].values[0])
     except:
-        return np.NAN
+        # info_col1.image("default_image.png", caption="用户头像")  # 使用默认图片
+        info_col2.metric("用户ID", user_data['uid'].values[0])
 
-def get_user_weibo(uid, cookie="", proxies=None):
-    # 当 cookie 为空时仍然提供空 cookie 字段，接口仍可访问
-    headers = {
-        'cookie': cookie if cookie else "",
-        'referer': 'https://m.weibo.cn/',
-        'user-agent': (
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) '
-            'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 '
-            'Mobile/15E148 Safari/604.1'
-        )
-    }
+    # 显示预测结果
+    #st.write(user_data['bot_prob'])
+    result_col1, result_col2 = st.columns(2)
 
-    base_url = f"https://m.weibo.cn/api/container/getIndex?type=uid&value={uid}&containerid=107603{uid}"
+    bot_label = 1 if user_data['bot_prob'].values[0] > 0 else 0
 
+    result_col1.metric("是否是机器人", ['No', 'Yes'][bot_label])
+    result_col2.metric("Bot Score", user_data['bot_prob'].values[0], help="模型输出的机器人分数，该分数分布在-10～10之间，大于0时模型将账号分类为机器人，小于0时模型将账号分类为人类。")
+
+# 缓存识别结果
+def check_account(uid, cookie="SCF=Aj5aK-M2tabhVQiDI9uEh6lBNQXKBAr3ZnahCEVfO73_1_8tczH9nqjvtX0xHIJninH0AUg6LYArK4guqlgfplc.; SUB=_2A25EGrP_DeRhGeBN7FYV8yvOyj-IHXVnVkk3rDV6PUJbktAbLRbykW1NRC0emn9OdTYEf5MXq2DO-USV6s2jtsdn; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5OmjT406FM.waPJ-C1Fwpp5JpX5KMhUgL.Foq0S0BXe0-EeKe2dJLoI0YLxKqL1KMLBK.LxKnLBo-LBoMLxKqL1KMLBK.LxKML1-BLBK2LxK-L12zLBKBLxK.L1KBLB.zLxKML1hzLB.et; SSOLoginState=1763623856; ALF=1766215856; MLOGIN=1; _T_WM=22387716469; XSRF-TOKEN=a36605; WEIBOCN_FROM=1110003030; mweibo_short_token=d0f27ec956; M_WEIBOCN_PARAMS=uicode%3D20000174"):
     try:
-        x = requests.get(base_url, headers=headers, timeout=3).json()
+        user_data = crawl_info.crawl_info(str(int(uid)).strip(), cookie)
+        st.write(user_data)
+        pred_user_data = bot_model.predict(user_data)
+        st.write(pred_user_data[['screen_name','bot_prob']])
+        return pred_user_data
     except Exception as e:
-        print("request error:", e)
-        return pd.DataFrame(columns=[
-            'created_at','mid','reposts_count','comments_count','attitudes_count',
-            'isLongText','region_name','text','retweeted_text','location'
-        ])
-
-    # 账号空内容情况
-    if x.get('msg') == '这里还没有内容':
-        return pd.DataFrame(columns=[
-            'created_at','mid','reposts_count','comments_count','attitudes_count',
-            'isLongText','region_name','text','retweeted_text','location'
-        ])
-
-    cards = x.get("data", {}).get("cards", [])
-    x_ = pd.DataFrame(cards)
-    all_line = pd.DataFrame()
-
-    # 解析微博（与你原结构完全一致）
-    for line in x_.query("card_type == 9").get('mblog', []):
-        try:
-            created_at = pd.to_datetime(line.get('created_at', np.NAN))
-            mid = line.get('mid', np.NAN)
-            reposts_count = line.get('reposts_count', np.NAN)
-            comments_count = line.get('comments_count', np.NAN)
-            attitudes_count = line.get('attitudes_count', np.NAN)
-            isLongText = line.get('isLongText', np.NAN)
-            region_name = line.get('region_name', np.NAN)
-
-            text = clean_text(line.get('text', np.NAN))
-
-            if "retweeted_status" in line:
-                retweeted_text = clean_text(
-                    line["retweeted_status"].get("text", np.NAN)
-                )
-            else:
-                retweeted_text = np.NAN
-
-            location = np.NAN
-            page_info = line.get("page_info", None)
-            if isinstance(page_info, dict) and page_info.get("type") == "place":
-                location = page_info.get("page_title", np.NAN)
-
-            if isLongText:
-                long_text = get_long_weibo(mid)
-                if isinstance(long_text, str):
-                    text = clean_text(long_text)
-
-            row = pd.DataFrame([[
-                created_at, mid, reposts_count, comments_count, attitudes_count,
-                isLongText, region_name, text, retweeted_text, location
-            ]], columns=[
-                'created_at','mid','reposts_count','comments_count',
-                'attitudes_count','isLongText','region_name','text',
-                'retweeted_text','location'
-            ])
-
-            all_line = pd.concat([all_line, row], ignore_index=True)
-        except Exception as e:
-            print("parse error:", e)
-            continue
-
-    return all_line
-
-
-
-def get_user_info(uid, cookie):
-    try:
-        url = f'https://m.weibo.cn/api/container/getIndex?&containerid=100505{uid}'
-        headers = {
-            'cookie': cookie,
-            'referer': 'https://m.weibo.cn/',
-            'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X)'
-        }
-
-        res = requests.get(url, timeout=3, headers=headers).json()
-        user = res.get("data", {}).get("userInfo", {})
-
-        df_ = pd.DataFrame([[
-            uid,
-            user.get("screen_name", np.NAN),
-            user.get("verified", np.NAN),
-            user.get("verified_type", np.NAN),
-            user.get("urank", np.NAN),
-            user.get("mbrank", np.NAN),
-            user.get("statuses_count", np.NAN),
-            user.get("follow_count", np.NAN),
-            user.get("followers_count", np.NAN),
-            user.get("gender", np.NAN),
-            user.get("description", np.NAN),
-            user.get("profile_image_url", np.NAN)
-        ]], columns=['uid','screen_name','verified','verified_type','urank','mbrank',
-                     'statuses_count','follow_count','followers_count','gender','description','profile_image_url'])
-
-        return df_
-    except Exception as e:
-        print("get_user_info error:", e)
-        df_ = pd.DataFrame([[np.NAN]*12], columns=['uid','screen_name','verified','verified_type','urank','mbrank',
-                                                   'statuses_count','follow_count','followers_count','gender','description','profile_image_url'])
-        df_['uid'] = uid
-        return df_
-
-
-def wan_transfer(text):
-    try:
-        text = str(text)
-        if '万' in text:
-            return int(float(text.replace('万', '')) * 10000)
-        if '亿' in text:
-            return int(float(text.replace('亿', '')) * 100000000)
-        return int(text)
-    except:
-        return np.NAN
-
-
-def cal_origin(csv_):
-    try:
-        csv_ = csv_.copy()
-        csv_['is_origin'] = csv_['retweeted_text'].apply(lambda x: 1 if pd.isna(x) else 0)
-        csv_['publish_time'] = pd.to_datetime(csv_['created_at'])
-        csv_.index = csv_['publish_time']
-
-        origin_rate = np.mean(csv_['is_origin'])
-        like_num = np.mean(csv_['attitudes_count'].apply(wan_transfer))
-        forward_num = np.mean(csv_['reposts_count'].apply(wan_transfer))
-        comment_num = np.mean(csv_['comments_count'].apply(wan_transfer))
-        post_freq = len(csv_) / len(csv_['publish_time'].resample('24h').count())
-        post_location = 1 if csv_['location'].notna().sum() > 1 else 0
-
-        richness_list = []
-        content_length_list = []
-        hashtag_list = []
-        at_list = []
-        for cont in csv_['text'].values:
-            cont = str(cont).split('// @')[0]
-            richness_list.append(cont)
-            content_length_list.append(len(cont))
-            hashtag_list.append(cont.count('#'))
-            at_list.append(cont.count('@'))
-
-        richness = len(set(''.join(richness_list)))
-        content_length = np.mean(content_length_list)
-        content_std = np.std(content_length_list)
-        hashtag = np.mean(hashtag_list)
-        at = np.mean(at_list)
-
-        return pd.DataFrame([[origin_rate, like_num, forward_num, comment_num, post_freq,
-                              post_location, content_length, content_std, richness, hashtag, at]],
-                            columns=['origin_rate','like_num','forward_num','comment_num',
-                                     'post_freq','post_location','content_length','content_std',
-                                     'richness','hashtag','at'])
-    except Exception as e:
-        print("cal_origin error:", e)
-        return pd.DataFrame([[np.NAN]*11], columns=['origin_rate','like_num','forward_num',
-                                                    'comment_num','post_freq','post_location',
-                                                    'content_length','content_std','richness',
-                                                    'hashtag','at'])
-
-
-def nickname_digit(s):
-    res = re.findall('\d+', str(s))
-    return len(res)
-
-
-def user_attr(data):
-    try:
-        data['verified'] = data['verified'].map({True:1, False:0})
-        data['gender'] = data['gender'].map({'m':1,'f':0})
-        data['description'] = data['description'].apply(lambda x: 0 if x=='暂无简介' else 1)
-
-        data['follow_count'] = data['follow_count'].apply(wan_transfer)
-        data['followers_count'] = data['followers_count'].apply(wan_transfer)
-        data['statuses_count'] = data['statuses_count'].apply(wan_transfer)
-
-        data['followers_follow'] = data['followers_count']/(data['follow_count']+1)
-        data['statuses_follow'] = data['statuses_count']/(data['follow_count']+1)
-
-        data['name_digit'] = data['screen_name'].apply(lambda x: 1 if nickname_digit(x)>= 1 else 0)
-        data['name_length'] = data['screen_name'].apply(lambda x: len(str(x)))
-
-        return data
-    except:
-        data['followers_follow'] = np.NAN
-        data['statuses_follow'] = np.NAN
-        data['name_digit'] = np.NAN
-        data['name_length'] = np.NAN
-        return data
-
-
-def crawl_info(uid, cookie):
-    try:
-        # 保证 UID 解析不改变你的字段格式
-        uid = str(uid).replace("https://weibo.com/u/", "")
-
-        user_info = get_user_info(uid, cookie)
-        user_posts = get_user_weibo(uid, cookie)
-
-        df_uid = cal_origin(user_posts)
-        data = user_attr(user_info)
-
-        user_data = pd.concat([data, df_uid], axis=1)
-        return user_data
-
-    except Exception as e:
-        print("crawl_info error:", e)
+        st.error(f"数据抓取或预测失败: {str(e)}", icon="🚨")
         return None
+    
+# 识别过程
+if st.button('🚀识别'):
+    if select == '用户ID':
+        if detect_user_id.strip() == "":
+            st.error('用户UID不能为空！', icon="🚨")
+        else:
+            
+            try:
+                if 'https://weibo.com/u/' in str(detect_user_id):
+                    detect_user_id = str(detect_user_id).strip().strip('https://weibo.com/u/')
+                pred_user_data = check_account(str(detect_user_id).strip())
+                show_info(pred_user_data)
+            except Exception as e:
+                st.error(f"识别失败: {str(e)}", icon="🚨")
+            
+                
+                    
+    elif select == '批量用户ID':
+        if uploaded_file is not None:
+            if 'uid' in uid_df.columns:
+                with st.spinner('正在执行 🚶 🚴 🛵 🚗 🏎️ 🚄 ...'):
+                    my_bar = st.progress(0)
+                    length = len(uid_df)
+                    uid_df = uid_df.reset_index()
+                    for idx, line in uid_df.iterrows():
+                        try:
+                            detect_user_id = str(line['uid'])
+                            if 'https://weibo.com/u/' in detect_user_id:
+                                detect_user_id = str(detect_user_id).strip().strip('https://weibo.com/u/')
+
+                            
+                            url = st.secrets["server_func"]
+                            data = {"uid": detect_user_id, "cookie": cookie}
+                            response = requests.post(url, json=data).json()
+                            uid_df.loc[idx, 'bot'] = response['bot_label']
+                            uid_df.loc[idx, 'bot_score'] = response['bot_prob']
+                            time.sleep(3.5)
+                            
+                        except Exception as e:
+                            uid_df.loc[idx, 'bot'] = np.NAN
+                            uid_df.loc[idx, 'bot_score'] = np.NAN
+                        my_bar.progress((idx + 1) / length)
+
+                    uid_csv = uid_df.to_csv(index=False).encode('utf-8')
+                    st.write('识别完毕！')
+                    st.download_button(
+                        label="⏬ Download data as CSV",
+                        data=uid_csv,
+                        file_name='result_bot.csv',
+                        mime='text/csv',
+                    )
+            else:
+                st.error('检测到CSV表格不包含‘uid’列，请重新上传！', icon="🚨")
+        else:
+            st.error('请上传用户ID的CSV表格！', icon="🚨")
+
+###########
+# 其他信息
+###########
+st.write("\n  ")
+st.write("\n  ")
+st.write("\n  ")
+st.write("\n  ")
+tab1, tab2, tab3 = st.tabs(["🌲背景", "📦模型简介", "📒更新日志"])
+
+with tab1:
+    st.markdown(" **社交机器人**(social bot)是活跃在社交媒体中，由自动化算法操纵的能够模仿人类行为、自动生成内容并和人类账号产生互动的社交媒体账号。")
+    
+with tab2:
+    st.markdown('该工具通过提取微博可公开获取的社交账号信息，基于XGboost模型识别微博平台中的社交机器人，当前模型性能（准确率：94.12%，召回率：94.34%）。')
+    
+    st.markdown('注：模型预测结果仅表明该账号是否有类似社交机器人的行为，预测结果仅供参考。受限制于训练数据，在不同数据中表现可能会存在差异，建议配合人工验证使用。该工具仅供学术交流使用，请勿用于商业目的。')
+    st.markdown('获取详情信息，请联系mengxiaocntc@163.com')
+    
+with tab3:
+    st.markdown('## 🏹 2025-01-26')
+    st.markdown('1. 增强批量识别稳定性')
+    st.markdown('2. Bug修复: 单账号识别时返回其他账号的结果')
+    
+    st.markdown('## 🍀 2024-10-31')
+    st.markdown('1. Bug修复: 输入id和识别id不一致')
+    st.markdown('2. 简化功能')
+    
+    st.markdown('## 🍀 2024-09-05')
+    st.markdown('1. Bug修复: 依赖更新')
+    
+    st.markdown('## 🍀 2023-03-05')
+    st.markdown('1. 针对用户信息抓取失败导致信息不全下的报错问题进行调整。')
+    st.markdown('2. 将预测结果保存到云数据库。')
+    
+    st.markdown('## 🐱 2023-03-04')
+    st.markdown('1. 完善了批量识别的页面。')
+    
+    st.markdown('## 🌃 2023-01-15')
+    st.markdown('1. 新增了转发分析功能。')
+    
+    st.markdown('## 🏠 2023-01-06')
+    st.markdown('1. 优化了代码和运行速度。')
+    
+    st.markdown('## ❤️ 2023-01-05')
+    st.markdown('1. 增加了批量识别功能。')
+    
+    st.markdown('## 🥱 2023-01-04')
+    st.markdown('1. 更新模型，在训练数据中增加了微博话题机器人。')
+    
+    st.markdown('## 🔥 2023-01-03')
+    st.markdown('1. 删除了登陆功能。')
+    st.markdown('2. 简化了模型所需输入。')
+    
+    st.markdown('## ⚽️ 2023-01-02')
+    st.markdown('1. 增加了登陆功能从而获取cookie。')
+    
+    st.markdown('## 🎈 2022-12-31')
+    st.markdown('1. 将识别模型通过streamlit实现在线访问和部署。')
+    st.markdown('2. 更新了网页的基本信息。')
+    st.markdown('3. 添加昵称查找和UID查找两种查找方式。')
+    st.markdown('4. 目前仍然存在因cookie过期而无法长期使用的问题。')
