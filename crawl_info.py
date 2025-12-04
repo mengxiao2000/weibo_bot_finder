@@ -121,18 +121,27 @@ def get_user_weibo(uid, cookie="", proxies=None):
     return all_line
 
 
+def get_user_info(uid, cookie=""):
+    """
+    使用 weibo.com/ajax/profile/info?uid=xx 获取用户信息
+    保持你原本字段顺序与类型不变
+    """
 
-def get_user_info(uid, cookie):
+    url = f"https://weibo.com/ajax/profile/info?uid={uid}"
+
+    headers = {
+        "cookie": cookie if cookie else "",
+        "referer": "https://weibo.com/",
+        "user-agent": (
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) "
+            "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 "
+            "Mobile/15E148 Safari/604.1"
+        )
+    }
+
     try:
-        url = f'https://m.weibo.cn/api/container/getIndex?&containerid=100505{uid}'
-        headers = {
-            'cookie': cookie,
-            'referer': 'https://m.weibo.cn/',
-            'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X)'
-        }
-
-        res = requests.get(url, timeout=3, headers=headers).json()
-        user = res.get("data", {}).get("userInfo", {})
+        res = requests.get(url, headers=headers, timeout=3).json()
+        user = res.get("data", {}).get("user", {})
 
         df_ = pd.DataFrame([[
             uid,
@@ -142,19 +151,26 @@ def get_user_info(uid, cookie):
             user.get("urank", np.NAN),
             user.get("mbrank", np.NAN),
             user.get("statuses_count", np.NAN),
-            user.get("follow_count", np.NAN),
-            user.get("followers_count", np.NAN),
+            user.get("friends_count", np.NAN),      # follow_count
+            user.get("followers_count", np.NAN),    # followers_count
             user.get("gender", np.NAN),
             user.get("description", np.NAN),
             user.get("profile_image_url", np.NAN)
-        ]], columns=['uid','screen_name','verified','verified_type','urank','mbrank',
-                     'statuses_count','follow_count','followers_count','gender','description','profile_image_url'])
+        ]], columns=[
+            'uid','screen_name','verified','verified_type','urank','mbrank',
+            'statuses_count','follow_count','followers_count','gender',
+            'description','profile_image_url'
+        ])
 
         return df_
+
     except Exception as e:
         print("get_user_info error:", e)
-        df_ = pd.DataFrame([[np.NAN]*12], columns=['uid','screen_name','verified','verified_type','urank','mbrank',
-                                                   'statuses_count','follow_count','followers_count','gender','description','profile_image_url'])
+        df_ = pd.DataFrame([[np.NAN]*12], columns=[
+            'uid','screen_name','verified','verified_type','urank','mbrank',
+            'statuses_count','follow_count','followers_count','gender',
+            'description','profile_image_url'
+        ])
         df_['uid'] = uid
         return df_
 
