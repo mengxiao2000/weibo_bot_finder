@@ -89,7 +89,7 @@ select = col2_search.radio(
     ('用户ID', '批量用户ID'), index=0, horizontal=True, label_visibility="collapsed")
 
 if select == '用户ID':
-    detect_user_id = st.text_input("请输入用户ID (例如:6374435213或https://weibo.com/u/6374435213 )：")
+    detect_user_id = st.text_input("请输入用户ID：")
 elif select == '批量用户ID':
     uploaded_file = st.file_uploader("请上传包含'uid'列的CSV文件：")
     if uploaded_file is not None:
