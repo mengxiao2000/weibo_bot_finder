@@ -26,6 +26,42 @@ import pymysql
 st.markdown('# <center> 🤖️ Bot Finder</center>', unsafe_allow_html=True)
 st.markdown(' <center> 微博社交机器人探测器 🛸 </center>', unsafe_allow_html=True)
 
+st.markdown("---")
+
+st.markdown(
+    """
+    <div style="
+        background-color:#fff3cd;
+        padding:20px;
+        border-radius:10px;
+        border:1px solid #ffeeba;
+        margin-bottom:20px;
+    ">
+    <h3>⚠️ 项目状态说明 | Project Status</h3>
+
+    <b>本项目已暂停维护（No longer actively maintained）</b>。<br><br>
+
+    这个项目在磕磕绊绊中维护了将近 <b>三年</b>。  
+    非常感谢每一位使用、反馈和支持过它的朋友。<br><br>
+
+    随着研究目标和应用场景的不断演进，
+    当前版本在架构与功能层面已难以支撑我对该系统的预期。  
+    因此，在数据接口受限与部署方式调整的背景下，
+    原微博社交机器人识别系统已完成重构，并迁移至新项目：<br><br>
+
+    👉 <b>pybotfinder</b><br>
+    <a href="https://github.com/mengxiao2000/pybotfinder" target="_blank">
+    https://github.com/mengxiao2000/pybotfinder
+    </a><br><br>
+
+    新项目在模型稳定性、特征工程和使用方式上均进行了系统性优化，
+    更适合当前与未来的研究与实践需求。
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
 ####################
 # 显示已经识别的机器人数量
 ####################
